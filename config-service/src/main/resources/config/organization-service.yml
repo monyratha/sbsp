@@ -14,7 +14,7 @@ logging:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%X{traceId:-},%X{spanId:-}]){cyan} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m%n"
 
 springdoc:
-  packagesToScan: pl.piomin.services.organization
+  packagesToScan: morning.com.services.organization
   cache:
     disabled: true
   version: '@springdoc.version@'
