@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    private static final String SECRET = "my-super-secret-key-that-is-long";
+    private static final String SECRET = "3cb25e69f99d783ed9b0146d9fb86c9e21d01d26b9bd360d7df14bb9f91f4015";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
     public String generateToken(String username) {
