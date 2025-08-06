@@ -73,6 +73,19 @@ services:
       - zipkin
     environment:
       SPRING_PROFILES_ACTIVE: docker
+  auth-service:
+    image: sbsp/auth-service:1.1-SNAPSHOT
+    ports:
+      - "8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    links:
+      - config-service
+      - discovery-service
+      - zipkin
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
   gateway-service:
     image: sbsp/gateway-service:1.1-SNAPSHOT
     ports:
