@@ -101,7 +101,7 @@
                         <configuration>
                             <image>
                                 <builder>paketobuildpacks/builder-jammy-base:latest</builder>
-                                <name>piomin/${project.artifactId}:${project.version}</name>
+                                <name>sbsp/${project.artifactId}:${project.version}</name>
                             </image>
                         </configuration>
                         <executions>

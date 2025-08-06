@@ -38,7 +38,7 @@
                                 <image>eclipse-temurin:21-jdk</image>
                             </from>
                             <to>
-                                <image>piomin/${project.artifactId}:${project.version}</image>
+                                <image>sbsp/${project.artifactId}:${project.version}</image>
                             </to>
                         </configuration>
                         <executions>
@@ -55,7 +55,7 @@
                     <!--						<artifactId>spring-boot-maven-plugin</artifactId>-->
                     <!--						<configuration>-->
                     <!--							<image>-->
-                    <!--								<name>piomin/${project.artifactId}:${project.version}</name>-->
+                    <!--								<name>sbsp/${project.artifactId}:${project.version}</name>-->
                     <!--							</image>-->
                     <!--						</configuration>-->
                     <!--						<executions>-->
