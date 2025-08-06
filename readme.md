@@ -109,6 +109,3 @@ spring-boot-subscription-platform/
 ## Author
 
 Built and maintained by **Lucas** — a backend developer passionate about scalable SaaS, clean code, and great architecture.
-
-## REF
-https://github.com/piomin/sample-spring-microservices-new
