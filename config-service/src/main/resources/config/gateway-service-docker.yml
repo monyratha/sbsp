@@ -25,7 +25,7 @@ spring:
         predicates:
           - Path=/auth/**
         filters:
-          - RewritePath=/auth/(?<path>.*), /\${path}
+          - RewritePath=/auth/v3/api-docs(?<path>.*), /v3/api-docs$\{path}
       - id: employee-service
         uri: lb://employee-service
         predicates:
