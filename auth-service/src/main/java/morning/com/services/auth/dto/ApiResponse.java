@@ -1,4 +1,4 @@
-package morning.com.services.auth.model;
+package morning.com.services.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

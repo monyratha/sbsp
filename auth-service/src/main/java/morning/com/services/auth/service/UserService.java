@@ -1,6 +1,6 @@
 package morning.com.services.auth.service;
 
-import morning.com.services.auth.model.User;
+import morning.com.services.auth.entity.User;
 import morning.com.services.auth.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

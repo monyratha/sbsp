@@ -1,9 +1,9 @@
 package morning.com.services.auth.controller;
 
-import morning.com.services.auth.model.ApiResponse;
-import morning.com.services.auth.model.AuthRequest;
-import morning.com.services.auth.model.AuthResponse;
-import morning.com.services.auth.model.ResultEnum;
+import morning.com.services.auth.dto.ApiResponse;
+import morning.com.services.auth.dto.AuthRequest;
+import morning.com.services.auth.dto.AuthResponse;
+import morning.com.services.auth.dto.ResultEnum;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
 import org.junit.jupiter.api.Test;

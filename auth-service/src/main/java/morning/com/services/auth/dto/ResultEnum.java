@@ -1,4 +1,4 @@
-package morning.com.services.auth.model;
+package morning.com.services.auth.dto;
 
 /**
  * Standard result codes and messages for API responses.

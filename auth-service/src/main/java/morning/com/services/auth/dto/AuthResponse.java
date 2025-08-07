@@ -1,4 +1,4 @@
-package morning.com.services.auth.model;
+package morning.com.services.auth.dto;
 
 public record AuthResponse(String token) {
 }

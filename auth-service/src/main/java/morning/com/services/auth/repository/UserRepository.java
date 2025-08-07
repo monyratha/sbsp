@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 
-import morning.com.services.auth.model.User;
+import morning.com.services.auth.entity.User;
 
 public interface UserRepository extends CrudRepository<User, String> {
     boolean existsByUsername(String username);
