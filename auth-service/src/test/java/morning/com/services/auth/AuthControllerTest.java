@@ -1,8 +1,10 @@
 package morning.com.services.auth;
 
 import morning.com.services.auth.controller.AuthController;
+import morning.com.services.auth.model.ApiResponse;
 import morning.com.services.auth.model.AuthRequest;
 import morning.com.services.auth.model.AuthResponse;
+import morning.com.services.auth.model.ResultEnum;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -29,19 +31,58 @@ class AuthControllerTest {
     private AuthController authController;
 
     @Test
-    void registerAndLogin() {
+    void registerSuccess() {
         AuthRequest request = new AuthRequest("user", "password");
 
-        ResponseEntity<Void> registerResponse = authController.register(request);
-        assertEquals(HttpStatus.OK, registerResponse.getStatusCode());
+        ResponseEntity<ApiResponse<Void>> response = authController.register(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ResultEnum.SUCCESS.getCode(), body.getCode());
+        assertEquals("User registered successfully", body.getMessage());
         verify(userService).register("user", "password");
+    }
 
+    @Test
+    void registerUsernameExists() {
+        AuthRequest request = new AuthRequest("user", "password");
+        doThrow(new IllegalArgumentException("exists"))
+                .when(userService).register("user", "password");
+
+        ResponseEntity<ApiResponse<Void>> response = authController.register(request);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ResultEnum.USERNAME_EXISTS.getCode(), body.getCode());
+        assertEquals(ResultEnum.USERNAME_EXISTS.getMessage(), body.getMessage());
+    }
+
+    @Test
+    void loginSuccess() {
+        AuthRequest request = new AuthRequest("user", "password");
         when(userService.authenticate("user", "password")).thenReturn(true);
         when(jwtService.generateToken("user")).thenReturn("token123");
 
-        ResponseEntity<AuthResponse> loginResponse = authController.login(request);
-        assertEquals(HttpStatus.OK, loginResponse.getStatusCode());
-        assertNotNull(loginResponse.getBody());
-        assertEquals("token123", loginResponse.getBody().token());
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<AuthResponse> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ResultEnum.SUCCESS.getCode(), body.getCode());
+        assertNotNull(body.getData());
+        assertEquals("token123", body.getData().token());
+    }
+
+    @Test
+    void loginInvalidCredentials() {
+        AuthRequest request = new AuthRequest("user", "wrong");
+        when(userService.authenticate("user", "wrong")).thenReturn(false);
+
+        ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        ApiResponse<AuthResponse> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ResultEnum.INVALID_CREDENTIALS.getCode(), body.getCode());
+        assertEquals(ResultEnum.INVALID_CREDENTIALS.getMessage(), body.getMessage());
+        assertNull(body.getData());
     }
 }
