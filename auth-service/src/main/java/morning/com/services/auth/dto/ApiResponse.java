@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
 /**
  * Response wrapper for API results, including status, message key, and optional data.
  * Provides factory methods to build {@link ResponseEntity} objects for success and error cases.
@@ -52,5 +53,47 @@ public class ApiResponse<T> {
      */
     public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey) {
         return error(status, messageKey, null);
+    }
+
+    /**
+     * Convenience success response with default {@link HttpStatus#OK} and custom message/data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success(String message, T data) {
+        return success(HttpStatus.OK, message, data);
+    }
+
+    /**
+     * Convenience success response with default message key and provided data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success(T data) {
+        return success(HttpStatus.OK, MessageKeys.SUCCESS, data);
+    }
+
+    /**
+     * Convenience success response with default {@link HttpStatus#OK} and no data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success(String message) {
+        return success(HttpStatus.OK, message, null);
+    }
+
+    /**
+     * Convenience success response with default status and message.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success() {
+        return success(HttpStatus.OK, MessageKeys.SUCCESS, null);
+    }
+
+    /**
+     * Convenience error response with default {@link HttpStatus#BAD_REQUEST} and message.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> error() {
+        return error(HttpStatus.BAD_REQUEST, MessageKeys.VALIDATION_ERROR, null);
+    }
+
+    /**
+     * Convenience error response with default {@link HttpStatus#BAD_REQUEST} and custom message.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> error(String message) {
+        return error(HttpStatus.BAD_REQUEST, message, null);
     }
 }
