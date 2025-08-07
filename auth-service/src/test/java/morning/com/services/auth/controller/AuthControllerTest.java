@@ -1,6 +1,5 @@
-package morning.com.services.auth;
+package morning.com.services.auth.controller;
 
-import morning.com.services.auth.controller.AuthController;
 import morning.com.services.auth.model.ApiResponse;
 import morning.com.services.auth.model.AuthRequest;
 import morning.com.services.auth.model.AuthResponse;
