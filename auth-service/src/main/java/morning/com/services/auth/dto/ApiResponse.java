@@ -2,10 +2,12 @@ package morning.com.services.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Response wrapper for API results, including status, message key, and optional data.
- * Provides factory methods for various success and error responses.
+ * Provides factory methods to build {@link ResponseEntity} objects for success and error cases.
  *
  * @author Lucas
  * @param <T> the type of the response data
@@ -24,53 +26,31 @@ public class ApiResponse<T> {
         this.data = null;
     }
 
-    // Factory method for success with data, using default success message key
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>("success", ResultEnum.SUCCESS.getMessageKey(), data);
+    /**
+     * Create a success response entity with the given HTTP status, message key and optional data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, String messageKey, T data) {
+        return ResponseEntity.status(status).body(new ApiResponse<>("success", messageKey, data));
     }
 
-    // Factory method for success with enum message key and data
-    public static <T> ApiResponse<T> success(ResultEnum messageEnum, T data) {
-        return new ApiResponse<>("success", messageEnum.getMessageKey(), data);
+    /**
+     * Create a success response entity with the given HTTP status and message key without data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, String messageKey) {
+        return success(status, messageKey, null);
     }
 
-    // Factory method for success with custom message key and data
-    public static <T> ApiResponse<T> success(String messageKey, T data) {
-        return new ApiResponse<>("success", messageKey, data);
+    /**
+     * Create an error response entity with the given HTTP status, message key and optional data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey, T data) {
+        return ResponseEntity.status(status).body(new ApiResponse<>("error", messageKey, data));
     }
 
-    // Factory method for success without data using enum message key
-    public static <T> ApiResponse<T> success(ResultEnum messageEnum) {
-        return new ApiResponse<>("success", messageEnum.getMessageKey(), null);
-    }
-
-    // Factory method for success without data and with default success message key
-    public static <T> ApiResponse<T> success() {
-        return new ApiResponse<>("success", ResultEnum.SUCCESS.getMessageKey(), null);
-    }
-
-    // Factory method for success without data and with a custom message key
-    public static <T> ApiResponse<T> success(String messageKey) {
-        return new ApiResponse<>("success", messageKey, null);
-    }
-
-    // Factory method for error with enum message key
-    public static <T> ApiResponse<T> error(ResultEnum messageEnum) {
-        return new ApiResponse<>("error", messageEnum.getMessageKey());
-    }
-
-    // Factory method for error with custom message key
-    public static <T> ApiResponse<T> error(String messageKey) {
-        return new ApiResponse<>("error", messageKey);
-    }
-
-    // Factory method for error with enum message key and data
-    public static <T> ApiResponse<T> error(ResultEnum messageEnum, T data) {
-        return new ApiResponse<>("error", messageEnum.getMessageKey(), data);
-    }
-
-    // Factory method for error with custom message key and data
-    public static <T> ApiResponse<T> error(String messageKey, T data) {
-        return new ApiResponse<>("error", messageKey, data);
+    /**
+     * Create an error response entity with the given HTTP status and message key without data.
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey) {
+        return error(status, messageKey, null);
     }
 }

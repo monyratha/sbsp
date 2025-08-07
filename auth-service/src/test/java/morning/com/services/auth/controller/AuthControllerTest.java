@@ -3,7 +3,7 @@ package morning.com.services.auth.controller;
 import morning.com.services.auth.dto.ApiResponse;
 import morning.com.services.auth.dto.AuthRequest;
 import morning.com.services.auth.dto.AuthResponse;
-import morning.com.services.auth.dto.ResultEnum;
+import morning.com.services.auth.dto.MessageKeys;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -38,14 +38,14 @@ class AuthControllerTest {
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
         assertEquals("success", body.getStatus());
-        assertEquals(ResultEnum.USER_REGISTERED.getMessageKey(), body.getMessageKey());
+        assertEquals(MessageKeys.USER_REGISTERED, body.getMessageKey());
         verify(userService).register("user", "password");
     }
 
     @Test
     void registerUsernameExists() {
         AuthRequest request = new AuthRequest("user", "password");
-        doThrow(new IllegalArgumentException(ResultEnum.USERNAME_EXISTS.getMessageKey()))
+        doThrow(new IllegalArgumentException(MessageKeys.USERNAME_EXISTS))
                 .when(userService).register("user", "password");
 
         ResponseEntity<ApiResponse<Void>> response = authController.register(request);
@@ -53,7 +53,7 @@ class AuthControllerTest {
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
         assertEquals("error", body.getStatus());
-        assertEquals(ResultEnum.USERNAME_EXISTS.getMessageKey(), body.getMessageKey());
+        assertEquals(MessageKeys.USERNAME_EXISTS, body.getMessageKey());
     }
 
     @Test
@@ -67,7 +67,7 @@ class AuthControllerTest {
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
         assertEquals("success", body.getStatus());
-        assertEquals(ResultEnum.SUCCESS.getMessageKey(), body.getMessageKey());
+        assertEquals(MessageKeys.SUCCESS, body.getMessageKey());
         assertNotNull(body.getData());
         assertEquals("token123", body.getData().token());
     }
@@ -82,7 +82,7 @@ class AuthControllerTest {
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
         assertEquals("error", body.getStatus());
-        assertEquals(ResultEnum.INVALID_CREDENTIALS.getMessageKey(), body.getMessageKey());
+        assertEquals(MessageKeys.INVALID_CREDENTIALS, body.getMessageKey());
         assertNull(body.getData());
     }
 }
