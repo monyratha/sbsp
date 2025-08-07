@@ -37,8 +37,8 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ResultEnum.SUCCESS.getCode(), body.getCode());
-        assertEquals("User registered successfully", body.getMessage());
+        assertEquals(ResultEnum.USER_REGISTERED.getCode(), body.getCode());
+        assertEquals(ResultEnum.USER_REGISTERED.getMessageKey(), body.getMessageKey());
         verify(userService).register("user", "password");
     }
 
@@ -53,7 +53,7 @@ class AuthControllerTest {
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
         assertEquals(ResultEnum.USERNAME_EXISTS.getCode(), body.getCode());
-        assertEquals(ResultEnum.USERNAME_EXISTS.getMessage(), body.getMessage());
+        assertEquals(ResultEnum.USERNAME_EXISTS.getMessageKey(), body.getMessageKey());
     }
 
     @Test
@@ -67,6 +67,7 @@ class AuthControllerTest {
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
         assertEquals(ResultEnum.SUCCESS.getCode(), body.getCode());
+        assertEquals(ResultEnum.SUCCESS.getMessageKey(), body.getMessageKey());
         assertNotNull(body.getData());
         assertEquals("token123", body.getData().token());
     }
@@ -81,7 +82,7 @@ class AuthControllerTest {
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
         assertEquals(ResultEnum.INVALID_CREDENTIALS.getCode(), body.getCode());
-        assertEquals(ResultEnum.INVALID_CREDENTIALS.getMessage(), body.getMessage());
+        assertEquals(ResultEnum.INVALID_CREDENTIALS.getMessageKey(), body.getMessageKey());
         assertNull(body.getData());
     }
 }

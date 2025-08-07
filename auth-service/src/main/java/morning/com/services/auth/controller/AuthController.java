@@ -29,7 +29,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> register(@RequestBody AuthRequest request) {
         try {
             userService.register(request.username(), request.password());
-            return ResponseEntity.ok(ApiResponse.ok("User registered successfully"));
+            return ResponseEntity.ok(ApiResponse.ok(ResultEnum.USER_REGISTERED));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ApiResponse.error(ResultEnum.USERNAME_EXISTS));
