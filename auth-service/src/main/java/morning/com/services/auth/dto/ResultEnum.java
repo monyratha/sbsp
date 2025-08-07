@@ -1,26 +1,19 @@
 package morning.com.services.auth.dto;
 
 /**
- * Standard result codes and message keys for API responses.
+ * Standard message keys for API responses.
  */
 public enum ResultEnum {
-    SUCCESS(200, "auth.success"),
-    ERROR(500, "auth.error"),
-    USER_REGISTERED(200, "auth.register.success"),
-    USERNAME_EXISTS(409, "auth.username.exists"),
-    INVALID_CREDENTIALS(401, "auth.invalid.credentials"),
-    VALIDATION_ERROR(400, "validation.error");
+    SUCCESS("auth.success"),
+    USER_REGISTERED("auth.register.success"),
+    USERNAME_EXISTS("auth.username.exists"),
+    INVALID_CREDENTIALS("auth.invalid.credentials"),
+    VALIDATION_ERROR("validation.error");
 
-    private final int code;
     private final String messageKey;
 
-    ResultEnum(int code, String messageKey) {
-        this.code = code;
+    ResultEnum(String messageKey) {
         this.messageKey = messageKey;
-    }
-
-    public int getCode() {
-        return code;
     }
 
     public String getMessageKey() {

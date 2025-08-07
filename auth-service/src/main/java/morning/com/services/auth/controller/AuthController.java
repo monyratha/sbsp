@@ -29,7 +29,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> register(@RequestBody AuthRequest request) {
         try {
             userService.register(request.username(), request.password());
-            return ResponseEntity.ok(ApiResponse.ok(ResultEnum.USER_REGISTERED));
+            return ResponseEntity.ok(ApiResponse.success(ResultEnum.USER_REGISTERED));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ApiResponse.error(ResultEnum.USERNAME_EXISTS));
@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody AuthRequest request) {
         if (userService.authenticate(request.username(), request.password())) {
             String token = jwtService.generateToken(request.username());
-            return ResponseEntity.ok(ApiResponse.ok(new AuthResponse(token)));
+            return ResponseEntity.ok(ApiResponse.success(ResultEnum.SUCCESS, new AuthResponse(token)));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ResultEnum.INVALID_CREDENTIALS));

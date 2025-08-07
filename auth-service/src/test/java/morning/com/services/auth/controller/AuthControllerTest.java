@@ -37,7 +37,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ResultEnum.USER_REGISTERED.getCode(), body.getCode());
+        assertEquals("success", body.getStatus());
         assertEquals(ResultEnum.USER_REGISTERED.getMessageKey(), body.getMessageKey());
         verify(userService).register("user", "password");
     }
@@ -45,14 +45,14 @@ class AuthControllerTest {
     @Test
     void registerUsernameExists() {
         AuthRequest request = new AuthRequest("user", "password");
-        doThrow(new IllegalArgumentException("exists"))
+        doThrow(new IllegalArgumentException(ResultEnum.USERNAME_EXISTS.getMessageKey()))
                 .when(userService).register("user", "password");
 
         ResponseEntity<ApiResponse<Void>> response = authController.register(request);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ResultEnum.USERNAME_EXISTS.getCode(), body.getCode());
+        assertEquals("error", body.getStatus());
         assertEquals(ResultEnum.USERNAME_EXISTS.getMessageKey(), body.getMessageKey());
     }
 
@@ -66,7 +66,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ResultEnum.SUCCESS.getCode(), body.getCode());
+        assertEquals("success", body.getStatus());
         assertEquals(ResultEnum.SUCCESS.getMessageKey(), body.getMessageKey());
         assertNotNull(body.getData());
         assertEquals("token123", body.getData().token());
@@ -81,7 +81,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ResultEnum.INVALID_CREDENTIALS.getCode(), body.getCode());
+        assertEquals("error", body.getStatus());
         assertEquals(ResultEnum.INVALID_CREDENTIALS.getMessageKey(), body.getMessageKey());
         assertNull(body.getData());
     }

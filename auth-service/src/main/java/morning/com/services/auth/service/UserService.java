@@ -1,5 +1,6 @@
 package morning.com.services.auth.service;
 
+import morning.com.services.auth.dto.ResultEnum;
 import morning.com.services.auth.entity.User;
 import morning.com.services.auth.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +20,7 @@ public class UserService {
 
     public void register(String username, String password) {
         if (repository.existsByUsername(username)) {
-            throw new IllegalArgumentException("User already exists");
+            throw new IllegalArgumentException(ResultEnum.USERNAME_EXISTS.getMessageKey());
         }
         String id = UUID.randomUUID().toString();
         String hash = encoder.encode(password);
