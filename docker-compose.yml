@@ -73,6 +73,13 @@ services:
       - zipkin
     environment:
       SPRING_PROFILES_ACTIVE: docker
+  auth-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: authdb
+    ports:
+      - "3306:3306"
   auth-service:
     image: sbsp/auth-service:1.1-SNAPSHOT
     ports:
@@ -80,10 +87,13 @@ services:
     depends_on:
       discovery-service:
         condition: service_healthy
+      auth-db:
+        condition: service_started
     links:
       - config-service
       - discovery-service
       - zipkin
+      - auth-db
     environment:
       SPRING_PROFILES_ACTIVE: docker
   gateway-service:

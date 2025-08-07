@@ -1,25 +1,26 @@
 package morning.com.services.auth.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
-    private final String id;
-    private final String username;
-    private final String passwordHash;
+    @Id
+    private String id;
 
-    public User(String id, String username, String passwordHash) {
-        this.id = id;
-        this.username = username;
-        this.passwordHash = passwordHash;
-    }
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    public String getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
+    @Column(nullable = false)
+    private String passwordHash;
 }

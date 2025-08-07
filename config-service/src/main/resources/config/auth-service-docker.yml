@@ -17,6 +17,16 @@ spring:
   output:
     ansi:
       enabled: always
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://auth-db:3306/authdb}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
 management:
   tracing:
