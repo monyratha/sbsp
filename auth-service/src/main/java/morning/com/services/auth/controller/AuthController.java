@@ -1,7 +1,9 @@
 package morning.com.services.auth.controller;
 
+import morning.com.services.auth.model.ApiResponse;
 import morning.com.services.auth.model.AuthRequest;
 import morning.com.services.auth.model.AuthResponse;
+import morning.com.services.auth.model.ResultEnum;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,21 +26,23 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<Void>> register(@RequestBody AuthRequest request) {
         try {
             userService.register(request.username(), request.password());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(ApiResponse.ok("User registered successfully"));
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error(ResultEnum.USERNAME_EXISTS));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody AuthRequest request) {
         if (userService.authenticate(request.username(), request.password())) {
             String token = jwtService.generateToken(request.username());
-            return ResponseEntity.ok(new AuthResponse(token));
+            return ResponseEntity.ok(ApiResponse.ok(new AuthResponse(token)));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(ResultEnum.INVALID_CREDENTIALS));
     }
 }
