@@ -22,6 +22,7 @@
         <sonar.projectKey>sbsp_spring-boot-subscription-platform</sonar.projectKey>
         <sonar.organization>sbsp</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <mockito.version>5.17.0</mockito.version>
     </properties>
 
     <modules>
@@ -55,6 +56,21 @@
             <plugin>
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>@{argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-agent-${mockito.version}.jar</argLine>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mockito</groupId>
+                        <artifactId>mockito-core</artifactId>
+                        <version>${mockito.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
