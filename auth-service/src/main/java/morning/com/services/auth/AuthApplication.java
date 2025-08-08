@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(title = "Auth API", version = "1.0", description = "Authentication API"))
 public class AuthApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(AuthApplication.class, args);
     }

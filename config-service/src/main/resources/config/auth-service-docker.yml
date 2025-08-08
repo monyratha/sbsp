@@ -35,3 +35,9 @@ management:
   zipkin:
     tracing:
       endpoint: http://zipkin:9411/api/v2/spans
+
+security:
+  jwt:
+    secret: mxeuGN155Wg98ds+dYeamwUilCt+TGBYsYgfxjLOtF4=    # supply via env var / Kubernetes secret
+    ttl: PT1H                # ISO-8601 duration (1 hour)
+    issuer: auth-service

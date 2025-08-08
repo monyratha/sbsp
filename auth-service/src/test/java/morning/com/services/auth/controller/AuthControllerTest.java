@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static morning.com.services.auth.dto.ApiResponse.Status.ERROR;
+import static morning.com.services.auth.dto.ApiResponse.Status.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -35,10 +37,11 @@ class AuthControllerTest {
 
         ResponseEntity<ApiResponse<Void>> response = authController.register(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals("success", body.getStatus());
-        assertEquals(MessageKeys.USER_REGISTERED, body.getMessageKey());
+        assertEquals(SUCCESS, body.status());
+        assertEquals(MessageKeys.USER_REGISTERED, body.messageKey());
         verify(userService).register("user", "password");
     }
 
@@ -50,10 +53,11 @@ class AuthControllerTest {
 
         ResponseEntity<ApiResponse<Void>> response = authController.register(request);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals("error", body.getStatus());
-        assertEquals(MessageKeys.USERNAME_EXISTS, body.getMessageKey());
+        assertEquals(ERROR, body.status());
+        assertEquals(MessageKeys.USERNAME_EXISTS, body.messageKey());
     }
 
     @Test
@@ -64,12 +68,13 @@ class AuthControllerTest {
 
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals("success", body.getStatus());
-        assertEquals(MessageKeys.SUCCESS, body.getMessageKey());
-        assertNotNull(body.getData());
-        assertEquals("token123", body.getData().token());
+        assertEquals(SUCCESS, body.status());
+        assertEquals(MessageKeys.SUCCESS, body.messageKey());
+        assertNotNull(body.data());
+        assertEquals("token123", body.data().token());
     }
 
     @Test
@@ -79,10 +84,11 @@ class AuthControllerTest {
 
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals("error", body.getStatus());
-        assertEquals(MessageKeys.INVALID_CREDENTIALS, body.getMessageKey());
-        assertNull(body.getData());
+        assertEquals(ERROR, body.status());
+        assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
+        assertNull(body.data());
     }
 }

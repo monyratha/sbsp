@@ -2,23 +2,38 @@ package morning.com.services.auth.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
 @Service
 public class JwtService {
-    private static final String SECRET = "3cb25e69f99d783ed9b0146d9fb86c9e21d01d26b9bd360d7df14bb9f91f4015";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    private final Key key;
+    private final long ttlMillis;
+    private final String issuer;
+
+    public JwtService(
+            @Value("${security.jwt.secret}") String secret,
+            @Value("${security.jwt.ttl:PT1H}") String ttl,
+            @Value("${security.jwt.issuer:auth-service}") String issuer
+    ) {
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.ttlMillis = Duration.parse(ttl).toMillis();
+        this.issuer = issuer;
+    }
 
     public String generateToken(String username) {
+        long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600_000))
+                .setIssuer(issuer)
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + ttlMillis))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -1,99 +1,40 @@
 package morning.com.services.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
 /**
- * Response wrapper for API results, including status, message key, and optional data.
- * Provides factory methods to build {@link ResponseEntity} objects for success and error cases.
- *
- * @author Lucas
- * @param <T> the type of the response data
+ * Standard API wrapper: { status: success|error, messageKey, data }
+ * Includes minimal static helpers for common HTTP responses.
  */
-@Data
-@AllArgsConstructor
-public class ApiResponse<T> {
-    private String status;
-    private String messageKey;
-    private T data;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record ApiResponse<T>(Status status, String messageKey, T data) {
 
-    // Constructor for responses without data
-    public ApiResponse(String status, String messageKey) {
-        this.status = status;
-        this.messageKey = messageKey;
-        this.data = null;
+    public enum Status {
+        SUCCESS("success"), ERROR("error");
+        private final String json;
+        Status(String json) { this.json = json; }
+        @JsonValue public String json() { return json; }
     }
 
-    /**
-     * Create a success response entity with the given HTTP status, message key and optional data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, String messageKey, T data) {
-        return ResponseEntity.status(status).body(new ApiResponse<>("success", messageKey, data));
+    // ---- Factory helpers producing ResponseEntity<ApiResponse<T>> ----
+    public static <T> ResponseEntity<ApiResponse<T>> success(String messageKey, T data) {
+        return ResponseEntity.ok(new ApiResponse<>(Status.SUCCESS, messageKey, data));
+    }
+    public static <T> ResponseEntity<ApiResponse<T>> success(String messageKey) {
+        return ResponseEntity.ok(new ApiResponse<>(Status.SUCCESS, messageKey, null));
+    }
+    public static <T> ResponseEntity<ApiResponse<T>> created(String messageKey, T data, String location) {
+        return ResponseEntity.created(java.net.URI.create(location))
+                .body(new ApiResponse<>(Status.SUCCESS, messageKey, data));
     }
 
-    /**
-     * Create a success response entity with the given HTTP status and message key without data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success(HttpStatus status, String messageKey) {
-        return success(status, messageKey, null);
-    }
-
-    /**
-     * Create an error response entity with the given HTTP status, message key and optional data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey, T data) {
-        return ResponseEntity.status(status).body(new ApiResponse<>("error", messageKey, data));
-    }
-
-    /**
-     * Create an error response entity with the given HTTP status and message key without data.
-     */
     public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey) {
-        return error(status, messageKey, null);
+        return ResponseEntity.status(status).body(new ApiResponse<>(Status.ERROR, messageKey, null));
     }
-
-    /**
-     * Convenience success response with default {@link HttpStatus#OK} and custom message/data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success(String message, T data) {
-        return success(HttpStatus.OK, message, data);
-    }
-
-    /**
-     * Convenience success response with default message key and provided data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success(T data) {
-        return success(HttpStatus.OK, MessageKeys.SUCCESS, data);
-    }
-
-    /**
-     * Convenience success response with default {@link HttpStatus#OK} and no data.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success(String message) {
-        return success(HttpStatus.OK, message, null);
-    }
-
-    /**
-     * Convenience success response with default status and message.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> success() {
-        return success(HttpStatus.OK, MessageKeys.SUCCESS, null);
-    }
-
-    /**
-     * Convenience error response with default {@link HttpStatus#BAD_REQUEST} and message.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> error() {
-        return error(HttpStatus.BAD_REQUEST, MessageKeys.VALIDATION_ERROR, null);
-    }
-
-    /**
-     * Convenience error response with default {@link HttpStatus#BAD_REQUEST} and custom message.
-     */
-    public static <T> ResponseEntity<ApiResponse<T>> error(String message) {
-        return error(HttpStatus.BAD_REQUEST, message, null);
+    public static <T> ResponseEntity<ApiResponse<T>> error(HttpStatus status, String messageKey, T data) {
+        return ResponseEntity.status(status).body(new ApiResponse<>(Status.ERROR, messageKey, data));
     }
 }
