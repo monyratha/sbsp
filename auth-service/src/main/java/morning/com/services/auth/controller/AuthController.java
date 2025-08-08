@@ -4,7 +4,6 @@ import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
-import morning.com.services.auth.service.PasswordValidator;
 import morning.com.services.auth.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,9 +23,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody AuthRequest request) {
-        if (!PasswordValidator.isValid(request.password())) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, MessageKeys.INVALID_PASSWORD);
-        }
         try {
             userService.register(request.username(), request.password());
             return ApiResponse.success(MessageKeys.USER_REGISTERED);

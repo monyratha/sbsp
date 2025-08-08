@@ -9,5 +9,4 @@ public final class MessageKeys {
     public static final String USERNAME_EXISTS = "auth.username.exists";
     public static final String INVALID_CREDENTIALS = "auth.invalid.credentials";
     public static final String VALIDATION_ERROR = "auth.validation.error";
-    public static final String INVALID_PASSWORD = "auth.password.invalid";
 }
