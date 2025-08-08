@@ -3,7 +3,9 @@ package morning.com.services.auth.service;
 import jakarta.transaction.Transactional;
 import morning.com.services.auth.dto.MessageKeys;
 import morning.com.services.auth.entity.User;
+import morning.com.services.auth.exception.AccountLockedException;
 import morning.com.services.auth.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,17 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final int maxFailedAttempts;
+    private final Duration lockDuration;
 
-    private static final int MAX_FAILED_ATTEMPTS = 5;
-    private static final Duration LOCK_DURATION = Duration.ofMinutes(5);
-
-    public UserService(UserRepository repository, PasswordEncoder encoder) {
+    public UserService(UserRepository repository,
+                       PasswordEncoder encoder,
+                       @Value("${security.login.max-failed-attempts:5}") int maxFailedAttempts,
+                       @Value("${security.login.lock-duration:PT5M}") Duration lockDuration) {
         this.repository = repository;
         this.encoder = encoder;
+        this.maxFailedAttempts = maxFailedAttempts;
+        this.lockDuration = lockDuration;
     }
 
     @Transactional
@@ -40,22 +46,25 @@ public class UserService {
                 .map(u -> {
                     Instant now = Instant.now();
                     if (u.getLockUntil() != null && now.isBefore(u.getLockUntil())) {
-                        return false;
+                        throw new AccountLockedException();
                     }
                     boolean matches = encoder.matches(password, u.getPasswordHash());
                     if (matches) {
                         u.setFailedAttempts(0);
                         u.setLockUntil(null);
-                    } else {
-                        int attempts = u.getFailedAttempts() + 1;
-                        u.setFailedAttempts(attempts);
-                        if (attempts >= MAX_FAILED_ATTEMPTS) {
-                            u.setLockUntil(now.plus(LOCK_DURATION));
-                            u.setFailedAttempts(0);
-                        }
+                        repository.save(u);
+                        return true;
+                    }
+                    int attempts = u.getFailedAttempts() + 1;
+                    u.setFailedAttempts(attempts);
+                    if (attempts >= maxFailedAttempts) {
+                        u.setLockUntil(now.plus(lockDuration));
+                        u.setFailedAttempts(0);
+                        repository.save(u);
+                        throw new AccountLockedException();
                     }
                     repository.save(u);
-                    return matches;
+                    return false;
                 })
                 .orElse(false);
     }

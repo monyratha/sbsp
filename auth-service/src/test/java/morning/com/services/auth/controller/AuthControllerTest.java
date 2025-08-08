@@ -4,6 +4,7 @@ import morning.com.services.auth.dto.ApiResponse;
 import morning.com.services.auth.dto.AuthRequest;
 import morning.com.services.auth.dto.AuthResponse;
 import morning.com.services.auth.dto.MessageKeys;
+import morning.com.services.auth.exception.AccountLockedException;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -99,4 +100,13 @@ class AuthControllerTest {
         assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
         assertNull(body.data());
     }
+
+    @Test
+    void loginAccountLocked() {
+        AuthRequest request = new AuthRequest("user", "password");
+        when(userService.authenticate("user", "password")).thenThrow(new AccountLockedException());
+
+        assertThrows(AccountLockedException.class, () -> authController.login(request));
+    }
 }
+

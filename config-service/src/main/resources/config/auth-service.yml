@@ -50,3 +50,6 @@ security:
     secret: mxeuGN155Wg98ds+dYeamwUilCt+TGBYsYgfxjLOtF4=    # supply via env var / Kubernetes secret
     ttl: PT1H                # ISO-8601 duration (1 hour)
     issuer: auth-service
+  login:
+    max-failed-attempts: 5
+    lock-duration: PT5M      # ISO-8601 duration
