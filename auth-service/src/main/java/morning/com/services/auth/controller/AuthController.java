@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,8 +35,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
-        if (userService.authenticate(request.username(), request.password())) {
-            String token = jwtService.generateToken(request.username());
+        String username = request.username().toLowerCase(Locale.ROOT);
+        if (userService.authenticate(username, request.password())) {
+            String token = jwtService.generateToken(username);
             long exp = jwtService.getExpiration(token).getTime();
             return ApiResponse.success(MessageKeys.SUCCESS, new AuthResponse(token, exp));
         }
