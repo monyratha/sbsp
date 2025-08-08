@@ -2,6 +2,7 @@ package morning.com.services.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.Instant;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,4 +20,11 @@ public class User {
 
     @Column(nullable = false)
     private String passwordHash;
+
+    @Setter
+    @Column(nullable = false)
+    private int failedAttempts;
+
+    @Setter
+    private Instant lockUntil;
 }
