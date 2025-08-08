@@ -32,13 +32,19 @@ public class UserService {
     }
 
     @Transactional
-    public void register(String username, String password) {
-        if (repository.existsByUsername(username)) {
+    public void register(String username, String email, String password) {
+        if (repository.existsByUsername(username) || repository.existsByEmail(email)) {
             throw new IllegalArgumentException(MessageKeys.USERNAME_EXISTS);
         }
         var id = UUID.randomUUID().toString();
         var hash = encoder.encode(password);
-        repository.save(new User(id, username, hash, 0, null));
+        var user = User.builder()
+                .id(id)
+                .username(username)
+                .email(email)
+                .passwordHash(hash)
+                .build();
+        repository.save(user);
     }
 
     public boolean authenticate(String username, String password) {
@@ -52,6 +58,7 @@ public class UserService {
                     if (matches) {
                         u.setFailedAttempts(0);
                         u.setLockUntil(null);
+                        u.setLastLoginAt(now);
                         repository.save(u);
                         return true;
                     }
