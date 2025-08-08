@@ -1,6 +1,10 @@
 server:
   port: 8060
 
+app:
+  cors:
+    origins: https://app.example.com,https://admin.example.com
+
 eureka:
   client:
     serviceUrl:
@@ -16,6 +20,8 @@ spring:
       enabled: always
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
       discovery:
         locator:
           enabled: true
