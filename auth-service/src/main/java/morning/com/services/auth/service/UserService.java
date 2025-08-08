@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,16 +34,20 @@ public class UserService {
 
     @Transactional
     public void register(String username, String password) {
-        if (repository.existsByUsername(username)) {
+        String normalized = username.toLowerCase(Locale.ROOT);
+        if (repository.existsByUsername(normalized)) {
             throw new IllegalArgumentException(MessageKeys.USERNAME_EXISTS);
         }
-        var id = UUID.randomUUID().toString();
-        var hash = encoder.encode(password);
-        repository.save(new User(id, username, hash, 0, null));
+        String id = UUID.randomUUID().toString();
+        String hash = encoder.encode(password);
+        User user = new User(id, normalized, null, hash);
+        user.getRoles().add(User.Role.USER);
+        repository.save(user);
     }
 
     public boolean authenticate(String username, String password) {
-        return repository.findByUsername(username)
+        String normalized = username.toLowerCase(Locale.ROOT);
+        return repository.findByUsername(normalized)
                 .map(u -> {
                     Instant now = Instant.now();
                     if (u.getLockUntil() != null && now.isBefore(u.getLockUntil())) {
@@ -52,6 +57,7 @@ public class UserService {
                     if (matches) {
                         u.setFailedAttempts(0);
                         u.setLockUntil(null);
+                        u.setLastLoginAt(now);
                         repository.save(u);
                         return true;
                     }
@@ -70,6 +76,10 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return repository.findByUsername(username);
+        return repository.findByUsername(username.toLowerCase(Locale.ROOT));
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email.toLowerCase(Locale.ROOT));
     }
 }
