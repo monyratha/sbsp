@@ -18,7 +18,7 @@ public class RefreshTokenService {
     private final Duration ttl;
 
     public RefreshTokenService(RefreshTokenRepository repository,
-                               @Value("${security.refresh-token.ttl:PT7D}") Duration ttl) {
+                               @Value("${security.refresh-token.ttl:P7D}") Duration ttl) {
         this.repository = repository;
         this.ttl = ttl;
     }
