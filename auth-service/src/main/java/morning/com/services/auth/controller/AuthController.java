@@ -1,9 +1,11 @@
 package morning.com.services.auth.controller;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +35,34 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         if (userService.authenticate(request.username(), request.password())) {
             String token = jwtService.generateToken(request.username());
-            return ApiResponse.success(MessageKeys.SUCCESS, new AuthResponse(token));
+            long exp = jwtService.getExpiration(token).getTime();
+            return ApiResponse.success(MessageKeys.SUCCESS, new AuthResponse(token, exp));
         }
         return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserInfo>> me(
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+
+        if (authorization == null) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        String auth = authorization.trim();
+        if (!auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        String token = auth.substring(7).trim();
+
+        String username;
+        try {
+            username = jwtService.getUsername(token);
+        } catch (JwtException e) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+
+        return userService.findByUsername(username)
+                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
+                .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
     }
 }

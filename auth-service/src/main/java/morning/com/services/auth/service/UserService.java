@@ -7,6 +7,7 @@ import morning.com.services.auth.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,5 +34,9 @@ public class UserService {
         return repository.findByUsername(username)
                 .map(u -> encoder.matches(password, u.getPasswordHash()))
                 .orElse(false);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return repository.findByUsername(username);
     }
 }

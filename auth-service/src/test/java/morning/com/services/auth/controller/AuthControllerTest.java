@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Date;
+
 import static morning.com.services.auth.dto.ApiResponse.Status.ERROR;
 import static morning.com.services.auth.dto.ApiResponse.Status.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,8 +65,12 @@ class AuthControllerTest {
     @Test
     void loginSuccess() {
         AuthRequest request = new AuthRequest("user", "password");
+
         when(userService.authenticate("user", "password")).thenReturn(true);
         when(jwtService.generateToken("user")).thenReturn("token123");
+
+        long exp = System.currentTimeMillis() + 3_600_000L; // +1h
+        when(jwtService.getExpiration("token123")).thenReturn(new Date(exp));
 
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -75,6 +81,8 @@ class AuthControllerTest {
         assertEquals(MessageKeys.SUCCESS, body.messageKey());
         assertNotNull(body.data());
         assertEquals("token123", body.data().token());
+        assertEquals(exp, body.data().expiresAtEpochMs());
+        assertEquals("Bearer", body.data().tokenType());
     }
 
     @Test
