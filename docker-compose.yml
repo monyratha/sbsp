@@ -101,11 +101,14 @@ services:
     ports:
       - "8060:8060"
     depends_on:
+      config-service:
+        condition: service_healthy
       discovery-service:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
     links:
+      - auth-service
       - config-service
       - discovery-service
       - employee-service
