@@ -1,104 +1,70 @@
-# Auth Service – Planned Endpoints
+# Auth Service
 
-## 1) Sessions / Devices
+Authentication microservice for the SBSP platform.
 
-* `GET /auth/sessions`
-  **Auth:** Bearer
-  **Returns:** `[{sessionId, createdAt, expiresAt, ip, userAgent, current}]`
-  **Why:** Let users see active logins.
+## Finished Endpoints
 
-* `POST /auth/sessions/revoke`
-  **Body:** `{ sessionId }`
-  **Auth:** Bearer
-  **Why:** Kill a single device.
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| `POST` | `/auth/register` | Register a new user account. |
+| `POST` | `/auth/login` | Authenticate and return access and refresh tokens. |
+| `GET`  | `/auth/me` | Retrieve information about the current user. |
+| `POST` | `/auth/refresh` | Rotate a refresh token and issue a new access token. |
+| `POST` | `/auth/logout` | Revoke the supplied refresh token. |
+| `POST` | `/auth/change-password` | Change the current user's password. |
 
-* `POST /auth/sessions/revoke-others`
-  **Auth:** Bearer
-  **Why:** Keep current, log out everywhere else.
+## Planned Endpoints
 
-* `POST /auth/sessions/revoke-all`
-  **Auth:** Bearer
-  **Why:** Panic button (lost phone).
+### Sessions / Devices
 
-## 2) Password Recovery
+- `GET /auth/sessions` – List active logins.
+- `POST /auth/sessions/revoke` – Revoke a specific session.
+- `POST /auth/sessions/revoke-others` – Revoke all other sessions.
+- `POST /auth/sessions/revoke-all` – Revoke every session.
 
-* `POST /auth/password/forgot`
-  **Body:** `{ usernameOrEmail }`
-  **Notes:** rate-limited, generic 200 (don’t leak existence).
-  **Why:** UX + support.
+### Password Recovery
 
-* `POST /auth/password/reset`
-  **Body:** `{ resetToken, newPassword }`
-  **Why:** Completes the flow.
+- `POST /auth/password/forgot` – Request a password reset.
+- `POST /auth/password/reset` – Complete the reset with a token.
 
-## 3) MFA (TOTP) – Phase 1
+### MFA (TOTP)
 
-* `POST /auth/mfa/totp/setup`
-  **Auth:** Bearer
-  **Returns:** `{ secret, qrSvg, recoveryCodes }` (secret pending until verify)
+- `POST /auth/mfa/totp/setup` – Get secret, QR, and recovery codes.
+- `POST /auth/mfa/totp/verify` – Activate TOTP.
+- `POST /auth/mfa/totp/disable`
+- `GET /auth/mfa/recovery-codes` – Rotate or download new codes.
+- `POST /auth/login` – Will accept optional `{ otp }` when MFA is enabled.
 
-* `POST /auth/mfa/totp/verify`
-  **Body:** `{ code }`
-  **Auth:** Bearer
-  **Why:** Activates TOTP.
+### Keys / Discovery
 
-* `POST /auth/mfa/totp/disable`
-  **Auth:** Bearer
+- `GET /.well-known/jwks.json` – JWKS for token verification.
+- `GET /.well-known/openid-configuration` *(optional)* – OIDC discovery.
+- `POST /auth/introspect` *(optional)* – Online token introspection.
 
-* `GET /auth/mfa/recovery-codes`
-  **Auth:** Bearer
-  **Why:** Rotate/download new codes.
+### Account State / Verification
 
-* **Login extension:** `POST /auth/login` accepts optional `{ otp }` when MFA is enabled.
+- Existing `POST /auth/register` triggers verification when configured.
+- `POST /auth/verify`
+- `POST /auth/verify/resend`
+- **Admin only:**
+  - `POST /auth/account/lock`
+  - `POST /auth/account/unlock`
+  - `POST /auth/account/disable`
+  - `POST /auth/account/enable`
 
-## 4) Keys / Discovery (make other services happy)
+### Token UX Variants
 
-* `GET /.well-known/jwks.json`
-  **Why:** Switch to RSA/EC signing; other services validate via JWKS.
+- `POST /auth/login-cookie` – Set `HttpOnly` cookies with access and refresh tokens.
+- `POST /auth/refresh-cookie` – Rotate the refresh cookie and set new tokens.
+- `POST /auth/logout-cookie` – Clear cookies and revoke the session.
 
-* `GET /.well-known/openid-configuration` (optional)
-  **Why:** OIDC-lite discovery for clients.
+### Auditing / Compliance
 
-* `POST /auth/introspect` (optional)
-  **Body:** `{ token }` → `{ active, sub, exp, scope }`
-  **Why:** Gateways that prefer online checks.
+- `GET /auth/audit/my-events` – User-facing audit log.
 
-## 5) Account State / Verification
+### Health / Ops
 
-* `POST /auth/register` → (already) trigger verification when configured
-* `POST /auth/verify`
-  **Body:** `{ code }`
-* `POST /auth/verify/resend`
-  **Body:** `{ destination }`
-* **Admin-only:**
+- `GET /auth/health`
+- `GET /auth/readiness`
+- `GET /auth/version` – Returns commit and build time.
 
-    * `POST /auth/account/lock` `{ userId }`
-    * `POST /auth/account/unlock` `{ userId }`
-    * `POST /auth/account/disable` / `enable` `{ userId }`
-      **Why:** Abuse handling + ops.
-
-## 6) Token UX Variants (web-friendly)
-
-* `POST /auth/login-cookie`
-  **Sets:** `HttpOnly` cookies (`access`, `refresh`) with `SameSite=Strict|Lax`.
-  **Why:** Safer for browsers (no JS access).
-
-* `POST /auth/refresh-cookie`
-  **Reads:** refresh cookie, rotates, sets new cookies.
-
-* `POST /auth/logout-cookie`
-  **Clears:** cookies + revokes current session.
-
-## 7) Auditing / Compliance
-
-* `GET /auth/audit/my-events`
-  **Auth:** Bearer
-  **Query:** `type`, `from`, `to`
-  **Why:** User-facing audit (logins, refreshes, revokes, password changes).
-
-## 8) Health / Ops (if not via Actuator already)
-
-* `GET /auth/health` (liveness)
-* `GET /auth/readiness`
-* `GET /auth/version` → `{ commit, buildTime }`
-  **Why:** SRE needs.
