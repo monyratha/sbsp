@@ -25,7 +25,7 @@ class RefreshTokenServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new RefreshTokenService(repository, "PT1H");
+        service = new RefreshTokenService(repository, Duration.ofHours(1));
     }
 
     @Test

@@ -7,13 +7,10 @@ import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.RefreshTokenService;
 import morning.com.services.auth.service.UserService;
-import morning.com.services.auth.entity.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -47,8 +44,10 @@ public class AuthController {
             String token = jwtService.generateToken(username);
             long exp = System.currentTimeMillis() + jwtService.ttlMillis();
             String userId = userService.findUserIdByUsername(username);
-            var issued = refreshTokenService.issue(userId, http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
-            return ApiResponse.success(MessageKeys.SUCCESS,
+            RefreshTokenService.Issued issued =
+                    refreshTokenService.issue(userId, http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
+            return ApiResponse.success(
+                    MessageKeys.SUCCESS,
                     new AuthResponse(token, exp, issued.rawToken()));
         }
         return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
@@ -57,41 +56,44 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserInfo>> me(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-        return extractToken(authorization)
-                .flatMap(this::resolveUser)
-                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
+        String token = extractToken(authorization);
+        if (token == null) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        String username;
+        try {
+            username = jwtService.getUsername(token);
+        } catch (JwtException e) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        return userService.findByUsername(username)
+                .map(u -> ApiResponse.success(
+                        MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
     }
 
-    private Optional<User> resolveUser(String token) {
-        try {
-            String username = jwtService.getUsername(token);
-            return userService.findByUsername(username);
-        } catch (JwtException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<String> extractToken(String authorization) {
+    private String extractToken(String authorization) {
         if (authorization == null) {
-            return Optional.empty();
+            return null;
         }
         String auth = authorization.trim();
         if (!auth.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
-            return Optional.empty();
+            return null;
         }
         String token = auth.substring(BEARER_PREFIX.length()).trim();
-        return token.isEmpty() ? Optional.empty() : Optional.of(token);
+        return token.isEmpty() ? null : token;
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshRequest request) {
         try {
-            var rotation = refreshTokenService.verifyAndRotate(request.refreshToken());
+            RefreshTokenService.Rotation rotation =
+                    refreshTokenService.verifyAndRotate(request.refreshToken());
             String username = userService.findUsernameById(rotation.userId());
             String token = jwtService.generateToken(username);
             long exp = System.currentTimeMillis() + jwtService.ttlMillis();
-            return ApiResponse.success(MessageKeys.SUCCESS,
+            return ApiResponse.success(
+                    MessageKeys.SUCCESS,
                     new AuthResponse(token, exp, rotation.issued().rawToken()));
         } catch (IllegalArgumentException ex) {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);

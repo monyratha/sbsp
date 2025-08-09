@@ -21,9 +21,9 @@ public class RefreshTokenService {
     private static final String INVALID_REFRESH_TOKEN = "invalid.refresh.token";
 
     public RefreshTokenService(RefreshTokenRepository repository,
-                               @Value("${security.refresh.ttl:P7D}") String ttl) {
+                               @Value("${security.refresh.ttl:P7D}") Duration ttl) {
         this.repository = repository;
-        this.ttl = Duration.parse(ttl);
+        this.ttl = ttl;
     }
 
     public record Issued(String id, String rawToken) {}
@@ -70,7 +70,7 @@ public class RefreshTokenService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
-    public static String sha256(String input) {
+    static String sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
