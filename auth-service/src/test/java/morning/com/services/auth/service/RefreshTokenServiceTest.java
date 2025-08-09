@@ -41,7 +41,11 @@ class RefreshTokenServiceTest {
         RefreshTokenService.Rotation rotation = service.verifyAndRotate(issued.rawToken());
         assertEquals("u1", rotation.userId());
         assertNotEquals(issued.id(), rotation.issued().id());
-        verify(repository, times(2)).save(any());
+        // Expect three save operations:
+        // 1. initial token issue,
+        // 2. revoking the old token during rotation,
+        // 3. persisting the newly issued token
+        verify(repository, times(3)).save(any());
     }
 
     @Test
