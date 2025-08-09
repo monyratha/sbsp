@@ -18,6 +18,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository repository;
     private final Duration ttl;
     private final SecureRandom random = new SecureRandom();
+    private static final String INVALID_REFRESH_TOKEN = "invalid.refresh.token";
 
     public RefreshTokenService(RefreshTokenRepository repository,
                                @Value("${security.refresh.ttl:P7D}") String ttl) {
@@ -44,18 +45,18 @@ public class RefreshTokenService {
     public Rotation verifyAndRotate(String rawToken) {
         String[] parts = rawToken.split("\\.");
         if (parts.length != 2) {
-            throw new IllegalArgumentException("invalid.refresh.token");
+            throw new IllegalArgumentException(INVALID_REFRESH_TOKEN);
         }
         String id = parts[0];
         String hash = sha256(rawToken);
         RefreshToken token = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("invalid.refresh.token"));
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_REFRESH_TOKEN));
         Instant now = Instant.now();
         if (token.getRevokedAt() != null || now.isAfter(token.getExpiresAt())) {
-            throw new IllegalArgumentException("invalid.refresh.token");
+            throw new IllegalArgumentException(INVALID_REFRESH_TOKEN);
         }
         if (!token.getTokenHash().equals(hash)) {
-            throw new IllegalArgumentException("invalid.refresh.token");
+            throw new IllegalArgumentException(INVALID_REFRESH_TOKEN);
         }
         token.setRevokedAt(now);
         repository.save(token);

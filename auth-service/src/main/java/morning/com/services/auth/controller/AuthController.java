@@ -1,17 +1,19 @@
 package morning.com.services.auth.controller;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.RefreshTokenService;
 import morning.com.services.auth.service.UserService;
+import morning.com.services.auth.entity.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,6 +21,7 @@ public class AuthController {
     private final UserService userService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public AuthController(UserService userService, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.userService = userService;
@@ -54,26 +57,31 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserInfo>> me(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-
-        if (authorization == null) {
-            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
-        }
-        String auth = authorization.trim();
-        if (!auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
-            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
-        }
-        String token = auth.substring(7).trim();
-
-        String username;
-        try {
-            username = jwtService.getUsername(token);
-        } catch (JwtException e) {
-            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
-        }
-
-        return userService.findByUsername(username)
+        return extractToken(authorization)
+                .flatMap(this::resolveUser)
                 .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
+    }
+
+    private Optional<User> resolveUser(String token) {
+        try {
+            String username = jwtService.getUsername(token);
+            return userService.findByUsername(username);
+        } catch (JwtException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<String> extractToken(String authorization) {
+        if (authorization == null) {
+            return Optional.empty();
+        }
+        String auth = authorization.trim();
+        if (!auth.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
+            return Optional.empty();
+        }
+        String token = auth.substring(BEARER_PREFIX.length()).trim();
+        return token.isEmpty() ? Optional.empty() : Optional.of(token);
     }
 
     @PostMapping("/refresh")
