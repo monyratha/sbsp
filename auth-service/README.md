@@ -2,6 +2,10 @@
 
 The auth service returns message keys instead of translated text in API responses. Consumers should translate these keys on the client side using their preferred i18n library.
 
+## Endpoints
+
+- `POST /auth/logout` – revokes the provided refresh token.
+
 ## Response format
 
 ```json

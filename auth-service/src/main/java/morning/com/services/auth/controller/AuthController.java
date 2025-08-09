@@ -89,4 +89,14 @@ public class AuthController {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody RefreshRequest request) {
+        try {
+            refreshTokenService.revoke(request.refreshToken());
+            return ApiResponse.success(MessageKeys.SUCCESS);
+        } catch (IllegalArgumentException ex) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+    }
 }

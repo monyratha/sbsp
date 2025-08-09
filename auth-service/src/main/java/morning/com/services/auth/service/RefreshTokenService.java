@@ -63,6 +63,26 @@ public class RefreshTokenService {
         return new Rotation(token.getUserId(), issued);
     }
 
+    public void revoke(String rawToken) {
+        String[] parts = rawToken.split("\\.");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("invalid.refresh.token");
+        }
+        String id = parts[0];
+        String hash = sha256(rawToken);
+        RefreshToken token = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("invalid.refresh.token"));
+        Instant now = Instant.now();
+        if (token.getRevokedAt() != null || now.isAfter(token.getExpiresAt())) {
+            throw new IllegalArgumentException("invalid.refresh.token");
+        }
+        if (!token.getTokenHash().equals(hash)) {
+            throw new IllegalArgumentException("invalid.refresh.token");
+        }
+        token.setRevokedAt(now);
+        repository.save(token);
+    }
+
     private String randomSecret() {
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
