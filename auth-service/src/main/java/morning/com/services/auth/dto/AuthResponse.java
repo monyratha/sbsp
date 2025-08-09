@@ -2,10 +2,11 @@ package morning.com.services.auth.dto;
 
 public record AuthResponse(
         String token,
-        long expiresAtEpochMs,
-        String tokenType
+        String tokenType,
+        long expiresAt,
+        String refreshToken
 ) {
-    public AuthResponse(String token, long expiresAtEpochMs) {
-        this(token, expiresAtEpochMs, "Bearer");
+    public AuthResponse(String token, long expiresAt, String refreshToken) {
+        this(token, "Bearer", expiresAt, refreshToken);
     }
 }

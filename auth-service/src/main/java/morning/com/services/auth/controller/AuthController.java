@@ -4,21 +4,26 @@ import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
+import morning.com.services.auth.service.RefreshTokenService;
 import morning.com.services.auth.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthController(UserService userService, JwtService jwtService) {
+    public AuthController(UserService userService, JwtService jwtService, RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/register")
@@ -32,11 +37,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request,
+                                                          HttpServletRequest http) {
         if (userService.authenticate(request.username(), request.password())) {
-            String token = jwtService.generateToken(request.username());
-            long exp = jwtService.getExpiration(token).getTime();
-            return ApiResponse.success(MessageKeys.SUCCESS, new AuthResponse(token, exp));
+            String username = request.username().toLowerCase();
+            String token = jwtService.generateToken(username);
+            long exp = System.currentTimeMillis() + jwtService.ttlMillis();
+            String userId = userService.findUserIdByUsername(username);
+            var issued = refreshTokenService.issue(userId, http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
+            return ApiResponse.success(MessageKeys.SUCCESS,
+                    new AuthResponse(token, exp, issued.rawToken()));
         }
         return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
     }
@@ -64,5 +74,19 @@ public class AuthController {
         return userService.findByUsername(username)
                 .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshRequest request) {
+        try {
+            var rotation = refreshTokenService.verifyAndRotate(request.refreshToken());
+            String username = userService.findUsernameById(rotation.userId());
+            String token = jwtService.generateToken(username);
+            long exp = System.currentTimeMillis() + jwtService.ttlMillis();
+            return ApiResponse.success(MessageKeys.SUCCESS,
+                    new AuthResponse(token, exp, rotation.issued().rawToken()));
+        } catch (IllegalArgumentException ex) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
     }
 }

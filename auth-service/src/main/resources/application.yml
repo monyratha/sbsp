@@ -9,3 +9,16 @@ spring:
     name: auth-service
   config:
     import: "optional:configserver:http://localhost:8088"
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+security:
+  jwt:
+    ttl: PT15M
+    secret: ${JWT_SECRET}
+    issuer: auth-service
+  refresh:
+    ttl: P7D

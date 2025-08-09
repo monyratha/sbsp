@@ -21,7 +21,7 @@ public class JwtService {
 
     public JwtService(
             @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.ttl:PT1H}") String ttl,
+            @Value("${security.jwt.ttl:PT15M}") String ttl,
             @Value("${security.jwt.issuer:auth-service}") String issuer
     ) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
@@ -58,5 +58,9 @@ public class JwtService {
 
     public Date getExpiration(String token) {
         return parseClaims(token).getExpiration();
+    }
+
+    public long ttlMillis() {
+        return ttlMillis;
     }
 }
