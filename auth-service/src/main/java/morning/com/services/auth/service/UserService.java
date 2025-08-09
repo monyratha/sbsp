@@ -91,4 +91,19 @@ public class UserService {
                 .map(User::getUsername)
                 .orElseThrow();
     }
+
+    @Transactional
+    public boolean changePassword(String username, String currentPassword, String newPassword) {
+        String normalized = username.toLowerCase();
+        return repository.findByUsername(normalized)
+                .map(user -> {
+                    if (!encoder.matches(currentPassword, user.getPasswordHash())) {
+                        return false;
+                    }
+                    user.setPasswordHash(encoder.encode(newPassword));
+                    user.setLastPasswordChangeAt(Instant.now());
+                    repository.save(user);
+                    return true;
+                }).orElse(false);
+    }
 }

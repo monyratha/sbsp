@@ -30,6 +30,7 @@ public class User {
     @Column(length = 190, unique = true)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String passwordHash;
 

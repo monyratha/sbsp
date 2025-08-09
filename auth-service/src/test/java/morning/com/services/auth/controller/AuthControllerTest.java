@@ -168,5 +168,33 @@ class AuthControllerTest {
         assertNotNull(body);
         assertEquals(ERROR, body.status());
     }
+
+    @Test
+    void changePasswordSuccess() {
+        PasswordChangeRequest request = new PasswordChangeRequest("old", "new");
+        when(jwtService.getUsername("token")).thenReturn("user");
+        when(userService.changePassword("user", "old", "new")).thenReturn(true);
+
+        ResponseEntity<ApiResponse<Void>> response = authController.changePassword("Bearer token", request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(SUCCESS, body.status());
+        assertEquals(MessageKeys.PASSWORD_CHANGED, body.messageKey());
+    }
+
+    @Test
+    void changePasswordInvalidCredentials() {
+        PasswordChangeRequest request = new PasswordChangeRequest("old", "new");
+        when(jwtService.getUsername("token")).thenReturn("user");
+        when(userService.changePassword("user", "old", "new")).thenReturn(false);
+
+        ResponseEntity<ApiResponse<Void>> response = authController.changePassword("Bearer token", request);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ERROR, body.status());
+        assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
+    }
 }
 

@@ -99,4 +99,29 @@ public class AuthController {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
         }
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @Valid @RequestBody PasswordChangeRequest request) {
+        if (authorization == null) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        String auth = authorization.trim();
+        if (!auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        String token = auth.substring(7).trim();
+        String username;
+        try {
+            username = jwtService.getUsername(token);
+        } catch (JwtException e) {
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+        }
+        boolean changed = userService.changePassword(username, request.currentPassword(), request.newPassword());
+        if (changed) {
+            return ApiResponse.success(MessageKeys.PASSWORD_CHANGED);
+        }
+        return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
+    }
 }
