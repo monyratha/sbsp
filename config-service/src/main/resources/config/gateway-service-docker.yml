@@ -55,7 +55,7 @@ spring:
         predicates:
         - Path=/user/**
         filters:
-        - RewritePath=/user/(?<path>.*), /$\{path}
+          - RewritePath=/user/v3/api-docs(?<path>.*), /v3/api-docs$\{path}
       - id: openapi
         uri: http://localhost:${server.port}
         predicates:

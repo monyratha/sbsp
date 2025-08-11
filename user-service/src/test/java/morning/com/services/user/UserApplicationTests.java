@@ -20,13 +20,13 @@ public class UserApplicationTests {
 
     @Test
     void findAll() {
-        User[] users = restTemplate.getForObject("/", User[].class);
+        User[] users = restTemplate.getForObject("/user", User[].class);
         Assertions.assertTrue(users.length > 0);
     }
 
     @Test
     void findById() {
-        User user = restTemplate.getForObject("/{id}", User.class, 1L);
+        User user = restTemplate.getForObject("/user/{id}", User.class, 1L);
         Assertions.assertNotNull(user);
         Assertions.assertNotNull(user.getId());
         Assertions.assertEquals(1L, user.getId());
@@ -35,7 +35,7 @@ public class UserApplicationTests {
     @Test
     void add() {
         User user = new User("Alice", "alice@example.com");
-        user = restTemplate.postForObject("/", user, User.class);
+        user = restTemplate.postForObject("/user", user, User.class);
         Assertions.assertNotNull(user);
         Assertions.assertNotNull(user.getId());
         Assertions.assertEquals("Alice", user.getName());
