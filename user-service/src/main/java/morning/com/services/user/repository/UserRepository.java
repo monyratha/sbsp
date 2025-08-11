@@ -9,10 +9,12 @@ import java.util.stream.Collectors;
 
 import morning.com.services.user.model.UserPage;
 import morning.com.services.user.model.UserProfile;
+import org.springframework.stereotype.Repository;
 
 /**
  * In-memory repository for user profiles.
  */
+@Repository
 public class UserRepository {
 
     private final List<UserProfile> users = new ArrayList<>();
@@ -29,10 +31,6 @@ public class UserRepository {
                 .filter(u -> u.getId().equals(id))
                 .findFirst()
                 .orElseThrow();
-    }
-
-    public List<UserProfile> findAll() {
-        return users;
     }
 
     /**
@@ -71,7 +69,7 @@ public class UserRepository {
     private Comparator<UserProfile> getComparator(String sort) {
         boolean desc = false;
         String field = sort;
-        if (sort.startsWith("-")) {
+        if (sort.startsWith("-") ) {
             desc = true;
             field = sort.substring(1);
         }
@@ -102,4 +100,3 @@ public class UserRepository {
         return comparator;
     }
 }
-

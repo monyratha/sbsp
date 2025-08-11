@@ -1,7 +1,5 @@
 package morning.com.services.user;
 
-import java.util.List;
-
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -29,21 +27,13 @@ public class UserRepositoryTest {
 
     @Test
     @Order(2)
-    void testFindAll() {
-        List<UserProfile> users = repository.findAll();
-        Assert.isTrue(users.size() == 1, "Users size is wrong.");
-        Assert.isTrue(users.get(0).getId() == 1L, "User bad id.");
-    }
-
-    @Test
-    @Order(3)
     void testSearch() {
         UserPage page = repository.search("t1", "tester", null, 0, 10, "id");
         Assert.isTrue(page.getTotal() == 1, "Search result size is wrong.");
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     void testFindById() {
         UserProfile user = repository.findById(1L);
         Assert.notNull(user, "User not found.");
