@@ -73,6 +73,31 @@ services:
       - zipkin
     environment:
       SPRING_PROFILES_ACTIVE: docker
+
+  user-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: userdb
+    ports:
+      - "3307:3306"
+
+  user-service:
+    image: sbsp/user-service:1.0-SNAPSHOT
+    ports:
+      - "8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      user-db:
+        condition: service_started
+    links:
+      - config-service
+      - discovery-service
+      - zipkin
+      - user-db
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
   auth-db:
     image: mysql:8.0
     environment:
@@ -114,4 +139,5 @@ services:
       - employee-service
       - department-service
       - organization-service
+      - user-service
       - zipkin
