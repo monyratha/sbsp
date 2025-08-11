@@ -16,7 +16,7 @@ import morning.com.services.user.model.UserProfile;
 import morning.com.services.user.repository.UserRepository;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);

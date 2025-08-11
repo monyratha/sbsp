@@ -41,7 +41,7 @@ public class UserApplicationTests {
     void findAll() {
         HttpEntity<Void> request = new HttpEntity<>(headersForTenant("t1"));
         ResponseEntity<UserPage> response = restTemplate.exchange(
-                "/users", HttpMethod.GET, request, UserPage.class);
+                "/user", HttpMethod.GET, request, UserPage.class);
         Assertions.assertEquals(2, response.getBody().getTotal());
     }
 
@@ -49,7 +49,7 @@ public class UserApplicationTests {
     void findById() {
         HttpEntity<Void> request = new HttpEntity<>(headersForTenant("t1"));
         ResponseEntity<UserProfile> response = restTemplate.exchange(
-                "/users/{id}", HttpMethod.GET, request, UserProfile.class, 1L);
+                "/user/{id}", HttpMethod.GET, request, UserProfile.class, 1L);
         UserProfile user = response.getBody();
         Assertions.assertNotNull(user);
         Assertions.assertNotNull(user.getId());
@@ -60,7 +60,7 @@ public class UserApplicationTests {
     void add() {
         UserProfile user = new UserProfile("Alice", "alice@example.com",
                 "444-4444", "ACTIVE", "t1");
-        user = restTemplate.postForObject("/users", user, UserProfile.class);
+        user = restTemplate.postForObject("/user", user, UserProfile.class);
         Assertions.assertNotNull(user);
         Assertions.assertNotNull(user.getId());
         Assertions.assertEquals("Alice", user.getUsername());
