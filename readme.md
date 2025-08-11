@@ -12,7 +12,7 @@ A modular, microservices-based SaaS platform built with Spring Boot 3.5.4 and Sp
 | `config-service`   | Centralized Spring Cloud Config Server (Git-backed) | Available |
 | `discovery-service`| Eureka server for service discovery | Available |
 | `auth-service`     | Handles user authentication (login, register, JWT issuance, password hashing) | Available |
-| `user-service`     | Manages users, profiles, roles, permissions, and referral/invite codes | Planned |
+| `user-service`     | Manages users, profiles, roles, permissions, and referral/invite codes | Available |
 | `site-service`     | Manages customer sites (subdomains), ownership, and multi-tenant logic | Planned |
 | `subscription-service` | Handles subscription plans, active plans, history, billing, etc. | Planned |
 | `gateway-service`  | API Gateway using Spring Cloud Gateway + route-based authentication | Planned |
@@ -37,7 +37,7 @@ A modular, microservices-based SaaS platform built with Spring Boot 3.5.4 and Sp
 - [ ] Implement global error handling, validation, Swagger
 
 ### Phase 3: User & Tenant Services
-- [ ] Create `user-service` and link with `auth-service`
+- [x] Create `user-service` and link with `auth-service`
 - [ ] Build `site-service` to manage subdomains & ownership
 - [ ] Add user-site assignment logic
 - [ ] Start `subscription-service` with plan models and history tracking
@@ -73,7 +73,7 @@ A modular, microservices-based SaaS platform built with Spring Boot 3.5.4 and Sp
 spring-boot-subscription-platform/
 ├── pom.xml                # Parent POM
 ├── auth-service/          # First service (login/register/jwt)
-├── user-service/          # Planned: user management & RBAC
+├── user-service/          # User management & RBAC
 ├── site-service/          # Planned: subdomain management
 ├── subscription-service/  # Planned: plan logic
 ├── config-service/        # Spring Cloud Config Server

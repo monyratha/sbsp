@@ -33,6 +33,7 @@
         <module>organization-service</module>
         <module>gateway-service</module>
         <module>auth-service</module>
+        <module>user-service</module>
     </modules>
 
     <dependencyManagement>

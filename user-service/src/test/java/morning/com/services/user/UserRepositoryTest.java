@@ -1,0 +1,42 @@
+package morning.com.services.user;
+
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.util.Assert;
+import morning.com.services.user.model.User;
+import morning.com.services.user.repository.UserRepository;
+
+import java.util.List;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class UserRepositoryTest {
+
+    private static final UserRepository repository = new UserRepository();
+
+    @Test
+    @Order(1)
+    void testAddUser() {
+        User user = new User("Test User", "test@example.com");
+        user = repository.add(user);
+        Assert.notNull(user, "User is null.");
+        Assert.isTrue(user.getId() == 1L, "User bad id.");
+    }
+
+    @Test
+    @Order(2)
+    void testFindAll() {
+        List<User> users = repository.findAll();
+        Assert.isTrue(users.size() == 1, "Users size is wrong.");
+        Assert.isTrue(users.get(0).getId() == 1L, "User bad id.");
+    }
+
+    @Test
+    @Order(3)
+    void testFindById() {
+        User user = repository.findById(1L);
+        Assert.notNull(user, "User not found.");
+        Assert.isTrue(user.getId() == 1L, "User bad id.");
+    }
+}
