@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import morning.com.services.user.model.UserPage;
@@ -18,15 +18,14 @@ import org.springframework.stereotype.Repository;
 public class UserRepository {
 
     private final List<UserProfile> users = new ArrayList<>();
-    private final AtomicLong sequence = new AtomicLong(0);
 
     public UserProfile add(UserProfile user) {
-        user.setId(sequence.incrementAndGet());
+        user.setId(UUID.randomUUID().toString());
         users.add(user);
         return user;
     }
 
-    public UserProfile findById(Long id) {
+    public UserProfile findById(String id) {
         return users.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst()

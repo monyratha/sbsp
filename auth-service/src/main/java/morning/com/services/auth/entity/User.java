@@ -6,8 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -66,20 +64,10 @@ public class User {
     @Column(length = 128)
     private String totpSecret;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles = new HashSet<>();
-
     @Setter
     @Column(nullable = false)
     private int failedAttempts;
 
     @Setter
     private Instant lockUntil;
-
-    public enum Role {
-        USER, ADMIN
-    }
 }

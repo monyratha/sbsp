@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -42,7 +41,7 @@ public class UserService {
         var hash = encoder.encode(password);
         var user = new User(id, normalized, null, hash, false, true,
                 null, null, null, null, null, null, false, null,
-                Set.of(User.Role.USER), 0, null);
+                0, null);
         repository.save(user);
     }
 

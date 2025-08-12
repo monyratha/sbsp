@@ -1,6 +1,6 @@
 -- USER PROFILES
 CREATE TABLE users_profile (
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id VARCHAR(36) NOT NULL,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(190) NULL,
     phone VARCHAR(32) NULL,

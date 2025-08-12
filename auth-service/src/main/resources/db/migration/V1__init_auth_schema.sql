@@ -29,16 +29,6 @@ CREATE INDEX ix_users_lock_until ON users (lock_until);
 CREATE INDEX ix_users_enabled ON users (enabled);
 CREATE INDEX ix_users_last_login ON users (last_login_at);
 
--- USER ROLES (simple role list, many-to-one)
-CREATE TABLE user_roles
-(
-    user_id VARCHAR(36)  NOT NULL,
-    role    VARCHAR(255) NOT NULL,
-    PRIMARY KEY (user_id, role),
-    CONSTRAINT fk_user_roles_user
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- REFRESH TOKENS (hashed; revoke via revoked_at)
 CREATE TABLE refresh_tokens
 (
