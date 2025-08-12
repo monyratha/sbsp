@@ -1,14 +1,15 @@
 package morning.com.services.auth.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,16 +18,21 @@ import java.time.Instant;
 @Table(name = "users")
 public class User {
     @Id
-    private String id;
+    @GeneratedValue
+    @UuidGenerator
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(columnDefinition = "CHAR(36)", nullable = false, updatable = false)
+    private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Setter
+    @Column(nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(length = 190, unique = true)
     private String email;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String passwordHash;
 
     @Column(nullable = false)

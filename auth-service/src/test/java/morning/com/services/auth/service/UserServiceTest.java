@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -40,7 +41,17 @@ class UserServiceTest {
     void registerStoresCredentialsAndCreatesProfile() {
         when(repository.existsByUsername("user")).thenReturn(false);
         when(encoder.encode("pwd")).thenReturn("hash");
-        when(repository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(repository.save(any(User.class))).thenAnswer(inv -> {
+            User u = inv.getArgument(0);
+            try {
+                var f = User.class.getDeclaredField("id");
+                f.setAccessible(true);
+                f.set(u, UUID.randomUUID());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return u;
+        });
 
         service.register("user", "pwd");
 
@@ -49,7 +60,7 @@ class UserServiceTest {
         ArgumentCaptor<UserProfile> profileCaptor = ArgumentCaptor.forClass(UserProfile.class);
         verify(userClient).create(profileCaptor.capture());
 
-        assertEquals(userCaptor.getValue().getId(), profileCaptor.getValue().id());
+        assertEquals(userCaptor.getValue().getId(), profileCaptor.getValue().userId());
         assertEquals("user", profileCaptor.getValue().username());
     }
 }

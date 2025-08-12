@@ -26,8 +26,8 @@ class UserProfileControllerTest {
 
     @Test
     void createDelegatesToService() {
-        UserProfile input = new UserProfile(null, null, null, null, null, null, null, null);
-        UserProfile saved = new UserProfile(null, null, null, null, null, null, null, null);
+        UserProfile input = new UserProfile(null, null, null, null, true, null, null);
+        UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
         when(service.add(input)).thenReturn(saved);
 
         UserProfile result = controller.create(input);
@@ -38,7 +38,7 @@ class UserProfileControllerTest {
 
     @Test
     void getReturnsProfileWhenFound() {
-        UserProfile saved = new UserProfile(null, null, null, null, null, null, null, null);
+        UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
         when(service.findById("id1")).thenReturn(Optional.of(saved));
 
         ResponseEntity<UserProfile> response = controller.get("id1");

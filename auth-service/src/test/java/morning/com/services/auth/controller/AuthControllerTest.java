@@ -77,7 +77,7 @@ class AuthControllerTest {
         when(jwtService.generateToken("user")).thenReturn("token123");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
         when(userService.findUserIdByUsername("user")).thenReturn("uid1");
-        when(refreshTokenService.issue(eq("uid1"), any(), any())).thenReturn(new RefreshTokenService.Issued("rid","refresh1"));
+        when(refreshTokenService.issue(eq("uid1"), any(), any())).thenReturn(new RefreshTokenService.Issued(1L,"refresh1"));
 
         long now = System.currentTimeMillis();
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request, http);
@@ -122,7 +122,7 @@ class AuthControllerTest {
     void refreshSuccess() {
         RefreshRequest request = new RefreshRequest("old");
         when(refreshTokenService.verifyAndRotate("old"))
-                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued("rid2","newRef")));
+                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued(2L,"newRef")));
         when(userService.findUsernameById("uid1")).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
@@ -153,7 +153,7 @@ class AuthControllerTest {
     void refreshReuseOldTokenFails() {
         RefreshRequest request = new RefreshRequest("reuse");
         when(refreshTokenService.verifyAndRotate("reuse"))
-                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued("rid2","newRef")))
+                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued(2L,"newRef")))
                 .thenThrow(new IllegalArgumentException());
         when(userService.findUsernameById("uid1")).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");

@@ -42,13 +42,12 @@ public class UserService {
         if (repository.existsByUsername(normalized)) {
             throw new IllegalArgumentException(MessageKeys.USERNAME_EXISTS);
         }
-        var id = UUID.randomUUID().toString();
         var hash = encoder.encode(password);
-        var user = new User(id, normalized, null, hash, false, true,
+        var user = new User(null, normalized, null, hash, false, true,
                 null, null, null, null, null, null, false, null,
                 0, null);
         repository.save(user);
-        userClient.create(new UserProfile(id, normalized, null, null, null, null));
+        userClient.create(new UserProfile(user.getId(), normalized, null, null, true));
     }
 
     public boolean authenticate(String username, String password) {
@@ -87,12 +86,12 @@ public class UserService {
 
     public String findUserIdByUsername(String username) {
         return repository.findByUsername(username.toLowerCase())
-                .map(User::getId)
+                .map(u -> u.getId().toString())
                 .orElseThrow();
     }
 
     public String findUsernameById(String userId) {
-        return repository.findById(userId)
+        return repository.findById(UUID.fromString(userId))
                 .map(User::getUsername)
                 .orElseThrow();
     }

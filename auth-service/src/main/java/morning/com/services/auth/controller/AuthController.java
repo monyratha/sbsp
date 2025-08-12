@@ -72,7 +72,7 @@ public class AuthController {
         }
 
         return userService.findByUsername(username)
-                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
+                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId().toString(), u.getUsername())))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
     }
 

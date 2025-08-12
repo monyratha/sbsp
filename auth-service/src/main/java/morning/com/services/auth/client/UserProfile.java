@@ -1,14 +1,15 @@
 package morning.com.services.auth.client;
 
+import java.util.UUID;
+
 /**
  * Profile representation sent to user-service when a new user registers.
  */
 public record UserProfile(
-        String id,
+        UUID userId,
         String username,
         String email,
         String phone,
-        String status,
-        String tenantId
+        boolean status
 ) {
 }
