@@ -13,13 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@Table(name = "users_profile", indexes = {
-        @Index(name = "ux_users_profile_username", columnList = "username", unique = true),
-        @Index(name = "ux_users_profile_email", columnList = "email", unique = true),
-        @Index(name = "ix_users_profile_tenant_id", columnList = "tenant_id"),
-        @Index(name = "ix_users_profile_status", columnList = "status"),
-        @Index(name = "ix_users_profile_phone", columnList = "phone")
-})
+@Table(name = "users_profile")
 public class UserProfile {
 
     @Id
