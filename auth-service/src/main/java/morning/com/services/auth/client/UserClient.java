@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserClient {
 
     @PostMapping("/user")
-    void add(@RequestBody UserProfile profile);
+    void create(@RequestBody UserProfile profile);
 }

@@ -48,7 +48,7 @@ public class UserService {
                 null, null, null, null, null, null, false, null,
                 0, null);
         repository.save(user);
-        userClient.add(new UserProfile(id, normalized, null, null, null, null));
+        userClient.create(new UserProfile(id, normalized, null, null, null, null));
     }
 
     public boolean authenticate(String username, String password) {

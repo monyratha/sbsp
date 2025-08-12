@@ -1,6 +1,9 @@
 package morning.com.services.auth.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,13 +14,7 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@Table(name = "users", indexes = {
-        @Index(name = "ux_users_username", columnList = "username", unique = true),
-        @Index(name = "ux_users_email", columnList = "email", unique = true),
-        @Index(name = "ix_users_lock_until", columnList = "lock_until"),
-        @Index(name = "ix_users_enabled", columnList = "enabled"),
-        @Index(name = "ix_users_last_login_at", columnList = "last_login_at")
-})
+@Table(name = "users")
 public class User {
     @Id
     private String id;

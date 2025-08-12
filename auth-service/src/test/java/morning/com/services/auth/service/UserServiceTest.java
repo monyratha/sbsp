@@ -47,7 +47,7 @@ class UserServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(repository).save(userCaptor.capture());
         ArgumentCaptor<UserProfile> profileCaptor = ArgumentCaptor.forClass(UserProfile.class);
-        verify(userClient).add(profileCaptor.capture());
+        verify(userClient).create(profileCaptor.capture());
 
         assertEquals(userCaptor.getValue().getId(), profileCaptor.getValue().id());
         assertEquals("user", profileCaptor.getValue().username());
