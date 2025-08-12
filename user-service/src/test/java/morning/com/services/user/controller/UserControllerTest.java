@@ -42,7 +42,7 @@ class UserControllerTest {
                 "555-5555", "ACTIVE", "t1");
         UserProfile saved = new UserProfile("tester", "test@example.com",
                 "555-5555", "ACTIVE", "t1");
-        saved.setId(1L);
+        saved.setId("testId01");
 
         when(repository.add(input)).thenReturn(saved);
 
@@ -56,14 +56,14 @@ class UserControllerTest {
     void findByIdDelegatesToRepository() {
         UserProfile saved = new UserProfile("tester", "test@example.com",
                 "555-5555", "ACTIVE", "t1");
-        saved.setId(1L);
+        saved.setId("testId01");
 
-        when(repository.findById(1L)).thenReturn(saved);
+        when(repository.findById("testId01")).thenReturn(saved);
 
-        UserProfile result = controller.findById(1L);
+        UserProfile result = controller.findById("testId01");
 
         assertEquals(saved, result);
-        verify(repository).findById(1L);
+        verify(repository).findById("testId01");
     }
 
     @Test
