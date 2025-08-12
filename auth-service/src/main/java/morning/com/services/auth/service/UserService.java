@@ -5,6 +5,8 @@ import morning.com.services.auth.dto.MessageKeys;
 import morning.com.services.auth.entity.User;
 import morning.com.services.auth.exception.AccountLockedException;
 import morning.com.services.auth.repository.UserRepository;
+import morning.com.services.auth.client.UserClient;
+import morning.com.services.auth.client.UserProfile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,13 +22,16 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final int maxFailedAttempts;
     private final Duration lockDuration;
+    private final UserClient userClient;
 
     public UserService(UserRepository repository,
                        PasswordEncoder encoder,
+                       UserClient userClient,
                        @Value("${security.login.max-failed-attempts:5}") int maxFailedAttempts,
                        @Value("${security.login.lock-duration:PT5M}") Duration lockDuration) {
         this.repository = repository;
         this.encoder = encoder;
+        this.userClient = userClient;
         this.maxFailedAttempts = maxFailedAttempts;
         this.lockDuration = lockDuration;
     }
@@ -43,6 +48,7 @@ public class UserService {
                 null, null, null, null, null, null, false, null,
                 0, null);
         repository.save(user);
+        userClient.add(new UserProfile(id, normalized, null, null, null, null));
     }
 
     public boolean authenticate(String username, String password) {

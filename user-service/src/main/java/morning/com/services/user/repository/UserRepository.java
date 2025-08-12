@@ -20,7 +20,9 @@ public class UserRepository {
     private final List<UserProfile> users = new ArrayList<>();
 
     public UserProfile add(UserProfile user) {
-        user.setId(UUID.randomUUID().toString());
+        if (user.getId() == null) {
+            user.setId(UUID.randomUUID().toString());
+        }
         users.add(user);
         return user;
     }
