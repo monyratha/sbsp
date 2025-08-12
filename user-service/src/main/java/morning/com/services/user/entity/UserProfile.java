@@ -1,12 +1,17 @@
 package morning.com.services.user.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,10 +22,9 @@ import java.time.Instant;
 public class UserProfile {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(length = 36)
-    private String id;
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column( columnDefinition = "CHAR(36)", nullable = false, updatable = false)
+    private UUID userId;
 
     @Column(nullable = false, unique = true, length = 100)
     private String username;
@@ -31,17 +35,14 @@ public class UserProfile {
     @Column(length = 32)
     private String phone;
 
-    @Column(nullable = false, length = 32)
-    private String status;
-
-    @Column(name = "tenant_id", nullable = false, length = 36)
-    private String tenantId;
+    @Column(nullable = false)
+    private boolean status;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(nullable = false)
     private Instant updatedAt;
 }

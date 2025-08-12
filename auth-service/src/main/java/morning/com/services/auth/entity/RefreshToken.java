@@ -6,20 +6,19 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 @Entity
-@Table(name = "refresh_tokens", indexes = {
-        @Index(name = "ix_refresh_user_id", columnList = "user_id"),
-        @Index(name = "ix_refresh_expires_at", columnList = "expires_at")
-})
+@Table(name = "refresh_tokens")
 public class RefreshToken {
     @Id
-    @Column(length = 36)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "user_id", length = 36, nullable = false)
+    @Column(length = 36, nullable = false)
     private String userId;
 
     @Column(length = 128, nullable = false)
@@ -28,7 +27,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiresAt;
 
-    @Setter
     private Instant revokedAt;
 
     @CreationTimestamp

@@ -60,7 +60,7 @@ class UserServiceTest {
         ArgumentCaptor<UserProfile> profileCaptor = ArgumentCaptor.forClass(UserProfile.class);
         verify(userClient).create(profileCaptor.capture());
 
-        assertEquals(userCaptor.getValue().getId().toString(), profileCaptor.getValue().id());
+        assertEquals(userCaptor.getValue().getId(), profileCaptor.getValue().userId());
         assertEquals("user", profileCaptor.getValue().username());
     }
 }
