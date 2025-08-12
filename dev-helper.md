@@ -40,9 +40,6 @@ mvn clean package -Pbuild-image
 # Start infrastructure
 docker compose up -d config-service discovery-service
 
-# Start business services
-docker compose up -d employee-service department-service organization-service
-
 # Start gateway
 docker compose up -d gateway-service
 ```
