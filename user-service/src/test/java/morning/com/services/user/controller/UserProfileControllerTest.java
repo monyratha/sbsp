@@ -3,6 +3,7 @@ package morning.com.services.user.controller;
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.entity.UserProfile;
+import morning.com.services.user.service.RoleService;
 import morning.com.services.user.service.UserProfileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +25,16 @@ class UserProfileControllerTest {
     @Mock
     UserProfileService service;
 
+    @Mock
+    RoleService roleService;
+
     @InjectMocks
     UserProfileController controller;
 
     @Test
     void createDelegatesToService() {
-        UserProfile input = new UserProfile(null, null, null, null, true, null, null);
-        UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
+        UserProfile input = new UserProfile(null, null, null, null, true, null, null, java.util.Collections.emptySet());
+        UserProfile saved = new UserProfile(null, null, null, null, true, null, null, java.util.Collections.emptySet());
         when(service.add(input)).thenReturn(saved);
 
         ResponseEntity<ApiResponse<UserProfile>> result = controller.create(input);
@@ -46,7 +50,7 @@ class UserProfileControllerTest {
 
     @Test
     void getReturnsProfileWhenFound() {
-        UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
+        UserProfile saved = new UserProfile(null, null, null, null, true, null, null, java.util.Collections.emptySet());
         UUID id = UUID.randomUUID();
         when(service.findById(id)).thenReturn(Optional.of(saved));
 
