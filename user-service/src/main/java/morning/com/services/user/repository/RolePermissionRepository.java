@@ -1,5 +1,6 @@
 package morning.com.services.user.repository;
 
+import morning.com.services.user.entity.RolePermission;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
@@ -7,7 +8,7 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 import java.util.UUID;
 
-public interface RolePermissionRepository extends Repository<Object, UUID> {
+public interface RolePermissionRepository extends Repository<RolePermission, RolePermission.Id> {
 
     interface EdgeView {
         UUID getRoleId();
