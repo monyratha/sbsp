@@ -2,13 +2,15 @@ package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
-import morning.com.services.user.entity.Permission;
+import morning.com.services.user.dto.PermissionCreateRequest;
+import morning.com.services.user.dto.PermissionResponse;
+import morning.com.services.user.dto.PermissionUpdateRequest;
 import morning.com.services.user.service.PermissionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/permission")
@@ -20,12 +22,22 @@ public class PermissionController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Permission>> create(@RequestBody Permission permission) {
-        Permission saved = service.add(permission);
+    public ResponseEntity<ApiResponse<PermissionResponse>> create(
+            @Validated @RequestBody PermissionCreateRequest request) {
+        PermissionResponse saved = service.add(request);
         return ApiResponse.created(
                 MessageKeys.PERMISSION_CREATED,
                 saved,
-                "/permission/" + saved.getId()
+                "/permission/" + saved.id()
         );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<PermissionResponse>> update(
+            @PathVariable UUID id,
+            @Validated @RequestBody PermissionUpdateRequest request) {
+        return service.update(id, request)
+                .map(resp -> ApiResponse.success(MessageKeys.SUCCESS, resp))
+                .orElseGet(() -> ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PERMISSION_NOT_FOUND));
     }
 }
