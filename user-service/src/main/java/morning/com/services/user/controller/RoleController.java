@@ -2,9 +2,11 @@ package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
+import morning.com.services.user.dto.RoleRequest;
 import morning.com.services.user.entity.Role;
 import morning.com.services.user.service.PermissionService;
 import morning.com.services.user.service.RoleService;
+import java.util.HashSet;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,8 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Role>> create(@RequestBody Role role) {
+    public ResponseEntity<ApiResponse<Role>> create(@RequestBody RoleRequest request) {
+        Role role = new Role(null, request.name(), request.description(), null, null, new HashSet<>());
         Role saved = service.add(role);
         return ApiResponse.created(
                 MessageKeys.ROLE_CREATED,

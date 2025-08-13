@@ -2,6 +2,7 @@ package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
+import morning.com.services.user.dto.PermissionRequest;
 import morning.com.services.user.entity.Permission;
 import morning.com.services.user.service.PermissionService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ public class PermissionController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Permission>> create(@RequestBody Permission permission) {
+    public ResponseEntity<ApiResponse<Permission>> create(@RequestBody PermissionRequest request) {
+        Permission permission = new Permission(null, request.code(), request.section(), request.label(), null, null);
         Permission saved = service.add(permission);
         return ApiResponse.created(
                 MessageKeys.PERMISSION_CREATED,

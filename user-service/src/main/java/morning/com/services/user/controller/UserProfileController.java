@@ -2,9 +2,11 @@ package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
+import morning.com.services.user.dto.UserProfileRequest;
 import morning.com.services.user.entity.UserProfile;
 import morning.com.services.user.service.RoleService;
 import morning.com.services.user.service.UserProfileService;
+import java.util.HashSet;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,17 @@ public class UserProfileController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserProfile>> create(@RequestBody UserProfile profile) {
+    public ResponseEntity<ApiResponse<UserProfile>> create(@RequestBody UserProfileRequest request) {
+        UserProfile profile = new UserProfile(
+                request.userId(),
+                request.username(),
+                request.email(),
+                request.phone(),
+                request.status(),
+                null,
+                null,
+                new HashSet<>()
+        );
         UserProfile saved = service.add(profile);
         return ApiResponse.created(
                 MessageKeys.PROFILE_CREATED,
