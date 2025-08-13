@@ -1,15 +1,11 @@
 package morning.com.services.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.*;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -28,5 +24,19 @@ public class Permission {
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String name;
+    private String code;
+
+    @Column(nullable = false, length = 100)
+    private String section;
+
+    @Column(nullable = false, length = 100)
+    private String label;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 }
