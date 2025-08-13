@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/user/role")
 public class RoleController {
     private final RoleService service;
     private final PermissionService permissionService;
