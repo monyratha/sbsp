@@ -1,5 +1,7 @@
 package morning.com.services.user.controller;
 
+import morning.com.services.user.dto.ApiResponse;
+import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.entity.UserProfile;
 import morning.com.services.user.service.UserProfileService;
 import org.junit.jupiter.api.Test;
@@ -31,9 +33,14 @@ class UserProfileControllerTest {
         UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
         when(service.add(input)).thenReturn(saved);
 
-        UserProfile result = controller.create(input);
+        ResponseEntity<ApiResponse<UserProfile>> result = controller.create(input);
 
-        assertSame(saved, result);
+        assertEquals(201, result.getStatusCodeValue());
+        ApiResponse<UserProfile> body = result.getBody();
+        assertNotNull(body);
+        assertEquals(ApiResponse.Status.SUCCESS, body.status());
+        assertEquals(MessageKeys.PROFILE_CREATED, body.messageKey());
+        assertSame(saved, body.data());
         verify(service).add(input);
     }
 
@@ -43,10 +50,14 @@ class UserProfileControllerTest {
         UUID id = UUID.randomUUID();
         when(service.findById(id)).thenReturn(Optional.of(saved));
 
-        ResponseEntity<UserProfile> response = controller.get(id);
+        ResponseEntity<ApiResponse<UserProfile>> response = controller.get(id);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertSame(saved, response.getBody());
+        ApiResponse<UserProfile> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ApiResponse.Status.SUCCESS, body.status());
+        assertEquals(MessageKeys.SUCCESS, body.messageKey());
+        assertSame(saved, body.data());
         verify(service).findById(id);
     }
 
@@ -55,10 +66,14 @@ class UserProfileControllerTest {
         UUID missing = UUID.randomUUID();
         when(service.findById(missing)).thenReturn(Optional.empty());
 
-        ResponseEntity<UserProfile> response = controller.get(missing);
+        ResponseEntity<ApiResponse<UserProfile>> response = controller.get(missing);
 
         assertEquals(404, response.getStatusCodeValue());
-        assertNull(response.getBody());
+        ApiResponse<UserProfile> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(ApiResponse.Status.ERROR, body.status());
+        assertEquals(MessageKeys.PROFILE_NOT_FOUND, body.messageKey());
+        assertNull(body.data());
         verify(service).findById(missing);
     }
 }
