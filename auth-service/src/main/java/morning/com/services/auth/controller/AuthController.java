@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -43,7 +44,7 @@ public class AuthController {
             String username = request.username().toLowerCase();
             String token = jwtService.generateToken(username);
             long exp = System.currentTimeMillis() + jwtService.ttlMillis();
-            String userId = userService.findUserIdByUsername(username);
+            UUID userId = userService.findUserIdByUsername(username);
             var issued = refreshTokenService.issue(userId, http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
             return ApiResponse.success(MessageKeys.SUCCESS,
                     new AuthResponse(token, exp, issued.rawToken()));
@@ -72,7 +73,7 @@ public class AuthController {
         }
 
         return userService.findByUsername(username)
-                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId().toString(), u.getUsername())))
+                .map(u -> ApiResponse.success(MessageKeys.SUCCESS, new UserInfo(u.getId(), u.getUsername())))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS));
     }
 

@@ -12,6 +12,7 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 public class RefreshTokenService {
@@ -25,10 +26,10 @@ public class RefreshTokenService {
         this.ttl = Duration.parse(ttl);
     }
 
-    public record Issued(Long id, String rawToken) {}
-    public record Rotation(String userId, Issued issued) {}
+    public record Issued(UUID id, String rawToken) {}
+    public record Rotation(UUID userId, Issued issued) {}
 
-    public Issued issue(String userId, String ip, String userAgent) {
+    public Issued issue(UUID userId, String ip, String userAgent) {
         Instant expiresAt = Instant.now().plus(ttl);
 
         // Insert with a non-null placeholder hash so NOT NULL is satisfied.
@@ -42,7 +43,7 @@ public class RefreshTokenService {
 
         token = repository.saveAndFlush(token);
 
-        // Build the raw token and final hash using the numeric id.
+        // Build the raw token and final hash using the UUID.
         String secret = randomSecret();
         String raw = token.getId() + "." + secret;
         token.setTokenHash(sha256(raw));
@@ -53,7 +54,7 @@ public class RefreshTokenService {
 
     @Transactional
     public Rotation verifyAndRotate(String rawToken) {
-        long id = parseId(rawToken);
+        UUID id = parseId(rawToken);
         String expectedHash = sha256(rawToken);
 
         RefreshToken token = repository.findById(id)
@@ -77,7 +78,7 @@ public class RefreshTokenService {
 
     @Transactional
     public void revoke(String rawToken) {
-        long id = parseId(rawToken);
+        UUID id = parseId(rawToken);
         String expectedHash = sha256(rawToken);
 
         RefreshToken token = repository.findById(id)
@@ -95,12 +96,12 @@ public class RefreshTokenService {
         repository.save(token);
     }
 
-    private static long parseId(String raw) {
+    private static UUID parseId(String raw) {
         String[] parts = raw.split("\\.");
         if (parts.length != 2) throw new IllegalArgumentException("invalid.refresh.token");
         try {
-            return Long.parseLong(parts[0]);
-        } catch (NumberFormatException e) {
+            return UUID.fromString(parts[0]);
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("invalid.refresh.token");
         }
     }

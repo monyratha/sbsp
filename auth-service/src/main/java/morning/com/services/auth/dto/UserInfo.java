@@ -1,3 +1,5 @@
 package morning.com.services.auth.dto;
 
-public record UserInfo(String id, String username) {}
+import java.util.UUID;
+
+public record UserInfo(UUID id, String username) {}

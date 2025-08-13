@@ -19,9 +19,9 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue
-    @UuidGenerator
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(columnDefinition = "CHAR(36)", nullable = false, updatable = false)
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID id;
 
     @Setter

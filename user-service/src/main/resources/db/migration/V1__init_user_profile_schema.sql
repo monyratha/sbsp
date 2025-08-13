@@ -1,7 +1,7 @@
 -- USER PROFILES
 CREATE TABLE users_profile
 (
-    user_id    CHAR(36) NOT NULL,
+    user_id    BINARY(16) NOT NULL,
     username   VARCHAR(100) NOT NULL,
     email      VARCHAR(190) NULL,
     phone      VARCHAR(32) NULL,

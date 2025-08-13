@@ -6,6 +6,7 @@ import morning.com.services.user.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserProfileService {
@@ -20,7 +21,7 @@ public class UserProfileService {
         return repository.save(profile);
     }
 
-    public Optional<UserProfile> findById(String id) {
+    public Optional<UserProfile> findById(UUID id) {
         return repository.findById(id);
     }
 }

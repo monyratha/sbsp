@@ -3,8 +3,12 @@ package morning.com.services.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -15,11 +19,15 @@ import java.time.Instant;
 @Table(name = "refresh_tokens")
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    private UUID id;
 
-    @Column(length = 36, nullable = false)
-    private String userId;
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(columnDefinition = "BINARY(16)", nullable = false)
+    private UUID userId;
 
     @Column(length = 128, nullable = false)
     private String tokenHash;

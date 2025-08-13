@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -39,23 +40,25 @@ class UserProfileControllerTest {
     @Test
     void getReturnsProfileWhenFound() {
         UserProfile saved = new UserProfile(null, null, null, null, true, null, null);
-        when(service.findById("id1")).thenReturn(Optional.of(saved));
+        UUID id = UUID.randomUUID();
+        when(service.findById(id)).thenReturn(Optional.of(saved));
 
-        ResponseEntity<UserProfile> response = controller.get("id1");
+        ResponseEntity<UserProfile> response = controller.get(id);
 
         assertEquals(200, response.getStatusCodeValue());
         assertSame(saved, response.getBody());
-        verify(service).findById("id1");
+        verify(service).findById(id);
     }
 
     @Test
     void getReturnsNotFoundWhenMissing() {
-        when(service.findById("missing")).thenReturn(Optional.empty());
+        UUID missing = UUID.randomUUID();
+        when(service.findById(missing)).thenReturn(Optional.empty());
 
-        ResponseEntity<UserProfile> response = controller.get("missing");
+        ResponseEntity<UserProfile> response = controller.get(missing);
 
         assertEquals(404, response.getStatusCodeValue());
         assertNull(response.getBody());
-        verify(service).findById("missing");
+        verify(service).findById(missing);
     }
 }

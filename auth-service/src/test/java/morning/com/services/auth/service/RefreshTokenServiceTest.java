@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,21 +37,20 @@ class RefreshTokenServiceTest {
         when(repository.save(any(RefreshToken.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
-        // 2) saveAndFlush assigns incremental IDs
-        AtomicLong seq = new AtomicLong(1);
+        // 2) saveAndFlush assigns UUIDs
         when(repository.saveAndFlush(any(RefreshToken.class)))
                 .thenAnswer(inv -> {
                     RefreshToken rt = inv.getArgument(0);
-                    if (rt.getId() == null) rt.setId(seq.getAndIncrement());
+                    if (rt.getId() == null) rt.setId(UUID.randomUUID());
                     return rt;
                 });
 
-        // Issue a token (id becomes 1)
-        RefreshTokenService.Issued issued = service.issue("u1", "ip", "ua");
+        UUID userId = UUID.randomUUID();
+        RefreshTokenService.Issued issued = service.issue(userId, "ip", "ua");
 
-        // Make repository able to find the stored token (id 1)
+        // Make repository able to find the stored token
         RefreshToken stored = new RefreshToken(
-                issued.id(), "u1",
+                issued.id(), userId,
                 RefreshTokenService.sha256(issued.rawToken()),
                 Instant.now().plus(Duration.ofHours(1)),
                 null, null, "ip", "ua"
@@ -61,7 +60,7 @@ class RefreshTokenServiceTest {
         // Rotate (creates id 2)
         RefreshTokenService.Rotation rotation = service.verifyAndRotate(issued.rawToken());
 
-        assertEquals("u1", rotation.userId());
+        assertEquals(userId, rotation.userId());
         assertNotEquals(issued.id(), rotation.issued().id());
 
         // Calls: saveAndFlush twice (create old/new), save thrice (hash old, revoke old, hash new)
@@ -79,43 +78,49 @@ class RefreshTokenServiceTest {
 
     @Test
     void expiredToken() {
-        String raw = "1.secret";
+        UUID id = UUID.randomUUID();
+        String secret = "secret";
+        String raw = id + "." + secret;
         RefreshToken token = new RefreshToken(
-                1L, "u1", RefreshTokenService.sha256(raw),
+                id, UUID.randomUUID(), RefreshTokenService.sha256(raw),
                 Instant.now().minusSeconds(1), null, null, "ip", "ua"
         );
-        when(repository.findById(1L)).thenReturn(Optional.of(token));
+        when(repository.findById(id)).thenReturn(Optional.of(token));
 
         assertThrows(IllegalArgumentException.class, () -> service.verifyAndRotate(raw));
-        verify(repository).findById(1L);
+        verify(repository).findById(id);
         verifyNoMoreInteractions(repository);
     }
 
     @Test
     void revokedToken() {
-        String raw = "1.secret";
+        UUID id = UUID.randomUUID();
+        String secret = "secret";
+        String raw = id + "." + secret;
         RefreshToken token = new RefreshToken(
-                1L, "u1", RefreshTokenService.sha256(raw),
+                id, UUID.randomUUID(), RefreshTokenService.sha256(raw),
                 Instant.now().plusSeconds(3600), Instant.now(), null, "ip", "ua"
         );
-        when(repository.findById(1L)).thenReturn(Optional.of(token));
+        when(repository.findById(id)).thenReturn(Optional.of(token));
 
         assertThrows(IllegalArgumentException.class, () -> service.verifyAndRotate(raw));
-        verify(repository).findById(1L);
+        verify(repository).findById(id);
         verifyNoMoreInteractions(repository);
     }
 
     @Test
     void mismatchedHash() {
-        String raw = "1.secret";
+        UUID id = UUID.randomUUID();
+        String secret = "secret";
+        String raw = id + "." + secret;
         RefreshToken token = new RefreshToken(
-                1L, "u1", "different-hash",
+                id, UUID.randomUUID(), "different-hash",
                 Instant.now().plusSeconds(3600), null, null, "ip", "ua"
         );
-        when(repository.findById(1L)).thenReturn(Optional.of(token));
+        when(repository.findById(id)).thenReturn(Optional.of(token));
 
         assertThrows(IllegalArgumentException.class, () -> service.verifyAndRotate(raw));
-        verify(repository).findById(1L);
+        verify(repository).findById(id);
         verifyNoMoreInteractions(repository);
     }
 }

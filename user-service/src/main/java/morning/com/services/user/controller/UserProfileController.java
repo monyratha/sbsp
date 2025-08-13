@@ -5,6 +5,8 @@ import morning.com.services.user.service.UserProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 public class UserProfileController {
@@ -20,7 +22,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserProfile> get(@PathVariable String id) {
+    public ResponseEntity<UserProfile> get(@PathVariable UUID id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

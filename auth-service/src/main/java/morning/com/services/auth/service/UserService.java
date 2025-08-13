@@ -84,14 +84,14 @@ public class UserService {
         return repository.findByUsername(username.toLowerCase());
     }
 
-    public String findUserIdByUsername(String username) {
+    public UUID findUserIdByUsername(String username) {
         return repository.findByUsername(username.toLowerCase())
-                .map(u -> u.getId().toString())
+                .map(User::getId)
                 .orElseThrow();
     }
 
-    public String findUsernameById(String userId) {
-        return repository.findById(UUID.fromString(userId))
+    public String findUsernameById(UUID userId) {
+        return repository.findById(userId)
                 .map(User::getUsername)
                 .orElseThrow();
     }

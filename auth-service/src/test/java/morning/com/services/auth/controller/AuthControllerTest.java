@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.util.UUID;
 
 import static morning.com.services.auth.dto.ApiResponse.Status.ERROR;
 import static morning.com.services.auth.dto.ApiResponse.Status.SUCCESS;
@@ -76,8 +77,9 @@ class AuthControllerTest {
         when(userService.authenticate("user", "password")).thenReturn(true);
         when(jwtService.generateToken("user")).thenReturn("token123");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
-        when(userService.findUserIdByUsername("user")).thenReturn("uid1");
-        when(refreshTokenService.issue(eq("uid1"), any(), any())).thenReturn(new RefreshTokenService.Issued(1L,"refresh1"));
+        UUID uid1 = UUID.randomUUID();
+        when(userService.findUserIdByUsername("user")).thenReturn(uid1);
+        when(refreshTokenService.issue(eq(uid1), any(), any())).thenReturn(new RefreshTokenService.Issued(UUID.randomUUID(),"refresh1"));
 
         long now = System.currentTimeMillis();
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.login(request, http);
@@ -121,9 +123,10 @@ class AuthControllerTest {
     @Test
     void refreshSuccess() {
         RefreshRequest request = new RefreshRequest("old");
+        UUID uid1 = UUID.randomUUID();
         when(refreshTokenService.verifyAndRotate("old"))
-                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued(2L,"newRef")));
-        when(userService.findUsernameById("uid1")).thenReturn("user");
+                .thenReturn(new RefreshTokenService.Rotation(uid1, new RefreshTokenService.Issued(UUID.randomUUID(),"newRef")));
+        when(userService.findUsernameById(uid1)).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
 
@@ -152,10 +155,11 @@ class AuthControllerTest {
     @Test
     void refreshReuseOldTokenFails() {
         RefreshRequest request = new RefreshRequest("reuse");
+        UUID uid1 = UUID.randomUUID();
         when(refreshTokenService.verifyAndRotate("reuse"))
-                .thenReturn(new RefreshTokenService.Rotation("uid1", new RefreshTokenService.Issued(2L,"newRef")))
+                .thenReturn(new RefreshTokenService.Rotation(uid1, new RefreshTokenService.Issued(UUID.randomUUID(),"newRef")))
                 .thenThrow(new IllegalArgumentException());
-        when(userService.findUsernameById("uid1")).thenReturn("user");
+        when(userService.findUsernameById(uid1)).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
 

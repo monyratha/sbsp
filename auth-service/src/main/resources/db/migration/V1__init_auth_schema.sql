@@ -1,7 +1,7 @@
 -- USERS
 CREATE TABLE users
 (
-    id                      CHAR(36) NOT NULL,
+    id                      BINARY(16) NOT NULL,
     username                VARCHAR(100) NOT NULL,
     password_hash           VARCHAR(255) NOT NULL,
     failed_attempts         INT UNSIGNED NOT NULL DEFAULT 0,
@@ -34,8 +34,8 @@ CREATE INDEX ix_users_last_login ON users (last_login_at);
 -- REFRESH TOKENS (hashed; revoke via revoked_at)
 CREATE TABLE refresh_tokens
 (
-    id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id    CHAR(36) NOT NULL,
+    id      BINARY(16) NOT NULL,
+    user_id    BINARY(16) NOT NULL,
     token_hash VARCHAR(128) NOT NULL,
     expires_at TIMESTAMP(6) NOT NULL,
     revoked_at TIMESTAMP(6) NULL,

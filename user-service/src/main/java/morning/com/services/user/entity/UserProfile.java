@@ -22,8 +22,8 @@ import java.util.UUID;
 public class UserProfile {
 
     @Id
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @Column( columnDefinition = "CHAR(36)", nullable = false, updatable = false)
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID userId;
 
     @Column(nullable = false, unique = true, length = 100)
