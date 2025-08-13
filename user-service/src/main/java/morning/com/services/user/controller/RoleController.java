@@ -28,7 +28,7 @@ public class RoleController {
         return ApiResponse.created(
                 MessageKeys.ROLE_CREATED,
                 saved,
-                "/role/" + saved.getRoleId()
+                "/role/" + saved.getId()
         );
     }
 

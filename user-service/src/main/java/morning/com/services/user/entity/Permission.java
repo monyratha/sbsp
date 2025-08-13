@@ -2,10 +2,12 @@ package morning.com.services.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
@@ -19,9 +21,11 @@ import java.util.UUID;
 public class Permission {
 
     @Id
+    @GeneratedValue
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
     @JdbcTypeCode(SqlTypes.BINARY)
     @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
-    private UUID permissionId;
+    private UUID id;
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;

@@ -25,7 +25,7 @@ public class PermissionController {
         return ApiResponse.created(
                 MessageKeys.PERMISSION_CREATED,
                 saved,
-                "/permission/" + saved.getPermissionId()
+                "/permission/" + saved.getId()
         );
     }
 }

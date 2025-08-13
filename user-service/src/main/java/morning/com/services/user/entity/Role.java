@@ -3,6 +3,7 @@ package morning.com.services.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 import java.util.HashSet;
@@ -18,9 +19,11 @@ import java.util.UUID;
 public class Role {
 
     @Id
+    @GeneratedValue
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
     @JdbcTypeCode(SqlTypes.BINARY)
     @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
-    private UUID roleId;
+    private UUID id;
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
@@ -28,8 +31,8 @@ public class Role {
     @ManyToMany
     @JoinTable(
             name = "role_permissions",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
     )
     private Set<Permission> permissions = new HashSet<>();
 }
