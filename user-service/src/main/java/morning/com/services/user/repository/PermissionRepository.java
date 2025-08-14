@@ -2,6 +2,8 @@ package morning.com.services.user.repository;
 
 import morning.com.services.user.dto.PermissionDTO;
 import morning.com.services.user.entity.Permission;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,7 @@ public interface PermissionRepository extends JpaRepository<Permission, UUID> {
     List<PermissionDTO> findAllProjectedByOrderBySectionAscLabelAsc();
 
     boolean existsByCode(String code);
+
+    Page<Permission> findByCodeContainingIgnoreCaseOrSectionContainingIgnoreCaseOrLabelContainingIgnoreCase(
+            String code, String section, String label, Pageable pageable);
 }

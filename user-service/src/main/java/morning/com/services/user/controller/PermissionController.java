@@ -1,16 +1,21 @@
 package morning.com.services.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import morning.com.services.user.dto.ApiResponse;
 import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.dto.PermissionCreateRequest;
 import morning.com.services.user.dto.PermissionResponse;
 import morning.com.services.user.dto.PermissionUpdateRequest;
 import morning.com.services.user.service.PermissionService;
-import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +25,16 @@ public class PermissionController {
 
     public PermissionController(PermissionService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    @Operation(summary = "List permissions")
+    public ResponseEntity<ApiResponse<Page<PermissionResponse>>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        Page<PermissionResponse> result = service.search(search, PageRequest.of(page, size));
+        return ApiResponse.success(MessageKeys.SUCCESS, result);
     }
 
     @PostMapping
@@ -42,5 +57,27 @@ public class PermissionController {
         return service.update(id, request)
                 .map(resp -> ApiResponse.success(MessageKeys.SUCCESS, resp))
                 .orElseGet(() -> ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PERMISSION_NOT_FOUND));
+    }
+
+    @PostMapping("/_bulk")
+    @Operation(summary = "Create permissions in bulk")
+    public ResponseEntity<ApiResponse<List<PermissionResponse>>> bulkCreate(
+            @RequestBody List<@Valid PermissionCreateRequest> requests) {
+        return ApiResponse.success(MessageKeys.SUCCESS, service.addBulk(requests));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete permission")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+        return service.delete(id)
+                ? ApiResponse.success(MessageKeys.SUCCESS)
+                : ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PERMISSION_NOT_FOUND);
+    }
+
+    @DeleteMapping("/_bulk")
+    @Operation(summary = "Delete permissions in bulk")
+    public ResponseEntity<ApiResponse<Void>> bulkDelete(@RequestBody List<UUID> ids) {
+        service.deleteBulk(ids);
+        return ApiResponse.success(MessageKeys.SUCCESS);
     }
 }
