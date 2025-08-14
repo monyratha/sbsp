@@ -26,7 +26,7 @@ public class PermissionService {
     @Transactional
     public PermissionResponse add(PermissionCreateRequest request) {
         if (repository.existsByCode(request.code())) {
-            throw new FieldValidationException("code", "already exists");
+            throw new FieldValidationException("code", "already.exists");
         }
         Permission entity = mapper.toEntity(request);
         Permission saved = repository.save(entity);
