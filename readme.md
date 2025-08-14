@@ -87,13 +87,13 @@ spring-boot-subscription-platform/
 
 ## Roles & Permissions Overview
 
-| Role         | Description |
-|--------------|-------------|
-| `Admin`      | Full platform access |
-| `Sub-admin`  | Manage subscriptions and customers |
-| `Marketing`  | Promote via referral/invite codes |
-| `Customer`   | Owns and manages sites, products, services |
-| `Sub-user`   | Assists customer in site/product/category management |
+| Role          | Description |
+|---------------|-------------|
+| `Super Admin` | Full platform access |
+| `Admin`       | Manage subscriptions and customers |
+| `Merchant`       | cOwns and manages sites, products, services |
+| `Marketing`   | Promote via referral/invite codes |
+| `Assists`    | Assists Merchant in site/product/category management |
 
 ---
 
