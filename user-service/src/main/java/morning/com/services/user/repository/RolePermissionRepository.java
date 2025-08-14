@@ -15,7 +15,7 @@ public interface RolePermissionRepository extends Repository<RolePermission, Rol
         UUID getPermissionId();
     }
 
-    @Query(value = "select role_id as roleId, permission_id as permissionId from role_permissions", nativeQuery = true)
+    @Query("select rp.id.roleId as roleId, rp.id.permissionId as permissionId from RolePermission rp")
     List<EdgeView> findAllEdges();
 
     @Modifying
