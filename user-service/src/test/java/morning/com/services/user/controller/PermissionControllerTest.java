@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ class PermissionControllerTest {
 
     @Test
     void listReturnsPermissions() throws Exception {
-        PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "CODE", "SEC", "LBL");
+        PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "CODE", "SEC", "LBL", Instant.now(), Instant.now());
         Page<PermissionResponse> page = new PageImpl<>(List.of(resp), PageRequest.of(0, 10), 1);
         when(service.search(eq("test"), any())).thenReturn(page);
 
@@ -60,7 +61,7 @@ class PermissionControllerTest {
 
     @Test
     void bulkCreateReturnsList() throws Exception {
-        PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "C", "S", "L");
+        PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "C", "S", "L", Instant.now(), Instant.now());
         when(service.addBulk(anyList())).thenReturn(List.of(resp));
         String payload = "[{\"code\":\"C\",\"section\":\"S\",\"label\":\"L\"}]";
         mockMvc.perform(post("/user/permission/_bulk")

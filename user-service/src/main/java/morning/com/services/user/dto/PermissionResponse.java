@@ -1,5 +1,6 @@
 package morning.com.services.user.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,8 @@ public record PermissionResponse(
         UUID id,
         String code,
         String section,
-        String label
+        String label,
+        Instant createdAt,
+        Instant updatedAt
 ) {
 }
