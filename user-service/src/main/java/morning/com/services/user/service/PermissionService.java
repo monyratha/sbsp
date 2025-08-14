@@ -7,6 +7,7 @@ import morning.com.services.user.dto.PermissionResponse;
 import morning.com.services.user.entity.Permission;
 import morning.com.services.user.mapper.PermissionMapper;
 import morning.com.services.user.repository.PermissionRepository;
+import morning.com.services.user.exception.FieldValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,6 +25,9 @@ public class PermissionService {
 
     @Transactional
     public PermissionResponse add(PermissionCreateRequest request) {
+        if (repository.existsByCode(request.code())) {
+            throw new FieldValidationException("code", "already exists");
+        }
         Permission entity = mapper.toEntity(request);
         Permission saved = repository.save(entity);
         return mapper.toResponse(saved);

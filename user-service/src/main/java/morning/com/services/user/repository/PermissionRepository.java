@@ -12,4 +12,6 @@ public interface PermissionRepository extends JpaRepository<Permission, UUID> {
 
     @Query("select new morning.com.services.user.dto.PermissionDTO(p.id, p.code, p.section, p.label) from Permission p order by p.section asc, p.label asc")
     List<PermissionDTO> findAllProjectedByOrderBySectionAscLabelAsc();
+
+    boolean existsByCode(String code);
 }
