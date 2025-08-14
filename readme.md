@@ -6,19 +6,19 @@ A modular, microservices-based SaaS platform built with Spring Boot 3.5.4 and Sp
 
 ## Project Modules
 
-| Module             | Description | Status |
-|--------------------|-------------|--------|
-| `zipkin`     | Distributed tracing system that collects and visualizes timing spans across microservices | Available |
-| `config-service`   | Centralized Spring Cloud Config Server (Git-backed) | Available |
-| `discovery-service`| Eureka server for service discovery | Available |
-| `auth-service`     | Handles user authentication (login, register, JWT issuance, password hashing) | Available |
-| `user-service`     | Manages users, profiles, roles, permissions, and referral/invite codes | Available |
-| `site-service`     | Manages customer sites (subdomains), ownership, and multi-tenant logic | Planned |
-| `subscription-service` | Handles subscription plans, active plans, history, billing, etc. | Planned |
-| `gateway-service`  | API Gateway using Spring Cloud Gateway + route-based authentication | Planned |
-| `audit-log-service`| Tracks and stores all important user/system actions | Planned |
-| `settings-service` | Platform-wide configuration and environment flags | Planned |
-
+| Module                 | Description                                                                               | Status |
+|------------------------|-------------------------------------------------------------------------------------------|--------|
+| `zipkin`               | Distributed tracing system that collects and visualizes timing spans across microservices | Available |
+| `config-service`       | Centralized Spring Cloud Config Server (Git-backed)                                       | Available |
+| `discovery-service`    | Eureka server for service discovery                                                       | Available |
+| `auth-service`         | Handles user authentication (login, register, JWT issuance, password hashing)             | Available |
+| `user-service`         | Manages users, profiles, roles, permissions, and referral/invite codes                    | Available |
+| `site-service`         | Manages customer sites (subdomains), ownership, and multi-tenant logic                    | Planned |
+| `subscription-service` | Handles subscription plans, active plans, history, billing, etc.                          | Planned |
+| `gateway-service`      | API Gateway using Spring Cloud Gateway + route-based authentication                       | Planned |
+| `audit-log-service`    | Tracks and stores all important user/system actions                                       | Planned |
+| `settings-service`     | Platform-wide configuration and environment flags                                         | Planned |
+| `payment-service`      | manage and integrate with payment                                                         | Planned |
 ---
 
 ## Development Plan
