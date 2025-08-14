@@ -12,4 +12,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
 
     @Query("select new morning.com.services.user.dto.RoleDTO(r.id, r.name) from Role r order by r.name")
     List<RoleDTO> findAllProjectedBy();
+
+    boolean existsByName(String name);
 }
