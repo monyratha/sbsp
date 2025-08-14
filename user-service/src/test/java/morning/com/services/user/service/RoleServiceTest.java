@@ -3,7 +3,9 @@ package morning.com.services.user.service;
 import morning.com.services.user.dto.Edge;
 import morning.com.services.user.dto.MatrixResponse;
 import morning.com.services.user.dto.PermissionDTO;
+import morning.com.services.user.dto.RoleCreateRequest;
 import morning.com.services.user.dto.RoleDTO;
+import morning.com.services.user.exception.FieldValidationException;
 import morning.com.services.user.repository.PermissionRepository;
 import morning.com.services.user.repository.RolePermissionRepository;
 import morning.com.services.user.repository.RoleRepository;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +46,17 @@ class RoleServiceTest {
     @BeforeEach
     void setUp() {
         service = new RoleService(roleRepository, permissionRepository, userRepository, rolePermissionRepository, roleMapper);
+    }
+
+    @Test
+    void addWhenNameExistsThrowsFieldValidationException() {
+        RoleCreateRequest request = new RoleCreateRequest("admin", null);
+        when(roleRepository.existsByName("admin")).thenReturn(true);
+
+        assertThrows(FieldValidationException.class, () -> service.add(request));
+
+        verify(roleRepository).existsByName("admin");
+        verifyNoMoreInteractions(roleRepository);
     }
 
     @Test
