@@ -1,6 +1,7 @@
 package morning.com.services.auth.controller;
 
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import morning.com.services.auth.dto.*;
 import morning.com.services.auth.service.JwtService;
@@ -28,6 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register new user account")
     public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody AuthRequest request) {
         try {
             userService.register(request.username(), request.password());
@@ -38,6 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Authenticate user and issue tokens")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request,
                                                           HttpServletRequest http) {
         if (userService.authenticate(request.username(), request.password())) {
@@ -53,6 +56,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "Get authenticated user info")
     public ResponseEntity<ApiResponse<UserInfo>> me(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
 
@@ -78,6 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh access token")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshRequest request) {
         try {
             var rotation = refreshTokenService.verifyAndRotate(request.refreshToken());
@@ -92,6 +97,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Log out user")
     public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody RefreshRequest request) {
         try {
             refreshTokenService.revoke(request.refreshToken());
@@ -102,6 +108,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
+    @Operation(summary = "Change user password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorization,
             @Valid @RequestBody PasswordChangeRequest request) {

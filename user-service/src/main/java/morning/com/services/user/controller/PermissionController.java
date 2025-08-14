@@ -6,6 +6,7 @@ import morning.com.services.user.dto.PermissionCreateRequest;
 import morning.com.services.user.dto.PermissionResponse;
 import morning.com.services.user.dto.PermissionUpdateRequest;
 import morning.com.services.user.service.PermissionService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ public class PermissionController {
     }
 
     @PostMapping
+    @Operation(summary = "Create new permission")
     public ResponseEntity<ApiResponse<PermissionResponse>> create(
             @Validated @RequestBody PermissionCreateRequest request) {
         PermissionResponse saved = service.add(request);
@@ -33,6 +35,7 @@ public class PermissionController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update existing permission")
     public ResponseEntity<ApiResponse<PermissionResponse>> update(
             @PathVariable UUID id,
             @Validated @RequestBody PermissionUpdateRequest request) {
