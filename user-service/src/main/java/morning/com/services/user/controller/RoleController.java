@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/role")
 public class RoleController {
     private final RoleService service;
 
@@ -17,7 +17,7 @@ public class RoleController {
         this.service = service;
     }
 
-    @PostMapping("/role")
+    @PostMapping
     public ResponseEntity<ApiResponse<Role>> create(@RequestBody Role role) {
         Role saved = service.add(role);
         return ApiResponse.created(
@@ -32,7 +32,7 @@ public class RoleController {
         return ApiResponse.success(MessageKeys.SUCCESS, service.getMatrix());
     }
 
-    @PatchMapping("/roles/{roleId}/permissions/{permId}")
+    @PatchMapping("/{roleId}/permissions/{permId}")
     public ResponseEntity<ApiResponse<Void>> toggle(@PathVariable UUID roleId,
                                                     @PathVariable UUID permId,
                                                     @RequestBody GrantRequest request) {
