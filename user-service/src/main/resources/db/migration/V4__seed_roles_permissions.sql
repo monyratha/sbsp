@@ -43,3 +43,10 @@ INSERT INTO role_permissions (role_id, permission_id) VALUES
   (UUID_TO_BIN('09b2b833-3303-4b45-848a-883b5e66faa0'), UUID_TO_BIN('8aaf60ec-ca7e-4dd2-b9b5-a60e315d65ff')),
   (UUID_TO_BIN('09b2b833-3303-4b45-848a-883b5e66faa0'), UUID_TO_BIN('e728a4e8-19fc-4664-813c-2a6a6b23263f')),
   (UUID_TO_BIN('09b2b833-3303-4b45-848a-883b5e66faa0'), UUID_TO_BIN('38f32558-0254-41a7-b93e-67ccb53038fb'));
+
+-- Seed a default super user with Super Admin role
+INSERT INTO users_profile (user_id, username, email) VALUES
+  (UUID_TO_BIN('11111111-1111-1111-1111-111111111111'), 'superuser', 'super@sbsp.local');
+
+INSERT INTO user_roles (user_id, role_id) VALUES
+  (UUID_TO_BIN('11111111-1111-1111-1111-111111111111'), UUID_TO_BIN('c3908054-dc02-43c6-8eca-969b7da54ea4'));
