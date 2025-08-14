@@ -10,6 +10,7 @@ import morning.com.services.user.dto.PermissionUpdateRequest;
 import morning.com.services.user.service.PermissionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,10 +31,15 @@ public class PermissionController {
     @GetMapping
     @Operation(summary = "List permissions")
     public ResponseEntity<ApiResponse<Page<PermissionResponse>>> list(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(required = false) String search) {
-        Page<PermissionResponse> result = service.search(search, PageRequest.of(page, size));
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Page<PermissionResponse> result = service.search(search, PageRequest.of(Math.max(page - 1, 0), size, sort));
         return ApiResponse.success(MessageKeys.SUCCESS, result);
     }
 
