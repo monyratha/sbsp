@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import morning.com.services.user.dto.*;
 import morning.com.services.user.entity.Role;
 import morning.com.services.user.entity.UserProfile;
+import morning.com.services.user.mapper.RoleMapper;
 import morning.com.services.user.repository.PermissionRepository;
 import morning.com.services.user.repository.RolePermissionRepository;
 import morning.com.services.user.repository.RoleRepository;
@@ -20,20 +21,25 @@ public class RoleService {
     private final PermissionRepository permissionRepository;
     private final UserProfileRepository userRepository;
     private final RolePermissionRepository rolePermissionRepository;
+    private final RoleMapper mapper;
 
     public RoleService(RoleRepository roleRepository,
                        PermissionRepository permissionRepository,
                        UserProfileRepository userRepository,
-                       RolePermissionRepository rolePermissionRepository) {
+                       RolePermissionRepository rolePermissionRepository,
+                       RoleMapper mapper) {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.userRepository = userRepository;
         this.rolePermissionRepository = rolePermissionRepository;
+        this.mapper = mapper;
     }
 
     @Transactional
-    public Role add(Role role) {
-        return roleRepository.save(role);
+    public RoleResponse add(RoleCreateRequest request) {
+        Role entity = mapper.toEntity(request);
+        Role saved = roleRepository.save(entity);
+        return mapper.toResponse(saved);
     }
 
     public Optional<Role> findById(UUID id) {

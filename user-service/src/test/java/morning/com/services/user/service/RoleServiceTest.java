@@ -35,11 +35,14 @@ class RoleServiceTest {
     @Mock
     private UserProfileRepository userRepository;
 
+    @Mock
+    private morning.com.services.user.mapper.RoleMapper roleMapper;
+
     private RoleService service;
 
     @BeforeEach
     void setUp() {
-        service = new RoleService(roleRepository, permissionRepository, userRepository, rolePermissionRepository);
+        service = new RoleService(roleRepository, permissionRepository, userRepository, rolePermissionRepository, roleMapper);
     }
 
     @Test

@@ -1,9 +1,9 @@
 package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.*;
-import morning.com.services.user.entity.Role;
 import morning.com.services.user.service.RoleService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,12 +18,13 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Role>> create(@RequestBody Role role) {
-        Role saved = service.add(role);
+    public ResponseEntity<ApiResponse<RoleResponse>> create(
+            @Validated @RequestBody RoleCreateRequest request) {
+        RoleResponse saved = service.add(request);
         return ApiResponse.created(
                 MessageKeys.ROLE_CREATED,
                 saved,
-                "/role/" + saved.getId()
+                "/role/" + saved.id()
         );
     }
 
