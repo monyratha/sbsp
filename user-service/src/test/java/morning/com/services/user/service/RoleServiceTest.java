@@ -7,6 +7,7 @@ import morning.com.services.user.dto.RoleDTO;
 import morning.com.services.user.repository.PermissionRepository;
 import morning.com.services.user.repository.RolePermissionRepository;
 import morning.com.services.user.repository.RoleRepository;
+import morning.com.services.user.repository.UserProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AclServiceTest {
+class RoleServiceTest {
 
     @Mock
     private RoleRepository roleRepository;
@@ -31,11 +32,14 @@ class AclServiceTest {
     @Mock
     private RolePermissionRepository rolePermissionRepository;
 
-    private AclService service;
+    @Mock
+    private UserProfileRepository userRepository;
+
+    private RoleService service;
 
     @BeforeEach
     void setUp() {
-        service = new AclService(roleRepository, permissionRepository, rolePermissionRepository);
+        service = new RoleService(roleRepository, permissionRepository, userRepository, rolePermissionRepository);
     }
 
     @Test
