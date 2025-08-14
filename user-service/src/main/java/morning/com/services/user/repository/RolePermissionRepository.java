@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public interface RolePermissionRepository extends Repository<RolePermission, RolePermission.Id> {
 
-    interface EdgeView {
+    interface RolePermissionEdgeView {
         UUID getRoleId();
         UUID getPermissionId();
     }
 
     @Query("select rp.id.roleId as roleId, rp.id.permissionId as permissionId from RolePermission rp")
-    List<EdgeView> findAllEdges();
+    List<RolePermissionEdgeView> findAllRolePermissionEdges();
 
     @Modifying
     @Query(value = "insert into role_permissions(role_id, permission_id) values (?1, ?2) on duplicate key update permission_id = permission_id", nativeQuery = true)

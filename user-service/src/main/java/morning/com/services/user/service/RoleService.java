@@ -61,8 +61,8 @@ public class RoleService {
     public MatrixResponse getMatrix() {
         List<RoleDTO> roles = roleRepository.findAllProjectedBy();
         List<PermissionDTO> permissions = permissionRepository.findAllProjectedByOrderBySectionAscLabelAsc();
-        List<Edge> edges = rolePermissionRepository.findAllEdges().stream()
-                .map(e -> new Edge(e.getRoleId(), e.getPermissionId()))
+        List<RolePermissionEdge> edges = rolePermissionRepository.findAllRolePermissionEdges().stream()
+                .map(e -> new RolePermissionEdge(e.getRoleId(), e.getPermissionId()))
                 .toList();
         return new MatrixResponse(roles, permissions, edges);
     }
@@ -77,9 +77,9 @@ public class RoleService {
     }
 
     @Transactional
-    public void applyBulk(List<BulkOp> ops) {
-        for (BulkOp op : ops) {
-            setGrant(op.roleId(), op.permissionId(), op.granted());
+    public void applyBulk(List<RolePermissionGrantChange> changes) {
+        for (RolePermissionGrantChange change : changes) {
+            setGrant(change.roleId(), change.permissionId(), change.granted());
         }
     }
 }

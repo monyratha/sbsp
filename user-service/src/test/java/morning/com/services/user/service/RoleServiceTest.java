@@ -1,6 +1,6 @@
 package morning.com.services.user.service;
 
-import morning.com.services.user.dto.Edge;
+import morning.com.services.user.dto.RolePermissionEdge;
 import morning.com.services.user.dto.MatrixResponse;
 import morning.com.services.user.dto.PermissionDTO;
 import morning.com.services.user.dto.RoleCreateRequest;
@@ -78,23 +78,23 @@ class RoleServiceTest {
         RoleDTO role = new RoleDTO(UUID.randomUUID(), "admin");
         PermissionDTO perm = new PermissionDTO(UUID.randomUUID(), "code", "sec", "label");
 
-        RolePermissionRepository.EdgeView edge = mock(RolePermissionRepository.EdgeView.class);
+        RolePermissionRepository.RolePermissionEdgeView edge = mock(RolePermissionRepository.RolePermissionEdgeView.class);
         when(edge.getRoleId()).thenReturn(role.id());
         when(edge.getPermissionId()).thenReturn(perm.id());
 
         when(roleRepository.findAllProjectedBy()).thenReturn(List.of(role));
         when(permissionRepository.findAllProjectedByOrderBySectionAscLabelAsc()).thenReturn(List.of(perm));
-        when(rolePermissionRepository.findAllEdges()).thenReturn(List.of(edge));
+        when(rolePermissionRepository.findAllRolePermissionEdges()).thenReturn(List.of(edge));
 
         MatrixResponse matrix = service.getMatrix();
 
         assertEquals(List.of(role), matrix.roles());
         assertEquals(List.of(perm), matrix.permissions());
-        assertEquals(List.of(new Edge(role.id(), perm.id())), matrix.grants());
+        assertEquals(List.of(new RolePermissionEdge(role.id(), perm.id())), matrix.grants());
 
         verify(roleRepository).findAllProjectedBy();
         verify(permissionRepository).findAllProjectedByOrderBySectionAscLabelAsc();
-        verify(rolePermissionRepository).findAllEdges();
+        verify(rolePermissionRepository).findAllRolePermissionEdges();
     }
 }
 

@@ -40,15 +40,15 @@ public class RoleController {
     @Operation(summary = "Grant or revoke role permission")
     public ResponseEntity<ApiResponse<Void>> toggle(@PathVariable UUID roleId,
                                                     @PathVariable UUID permId,
-                                                    @RequestBody GrantRequest request) {
+                                                    @RequestBody RolePermissionGrantRequest request) {
         service.setGrant(roleId, permId, request.granted());
         return ApiResponse.success(MessageKeys.SUCCESS);
     }
 
     @PostMapping("/acl-matrix")
     @Operation(summary = "Apply bulk permission operations")
-    public ResponseEntity<ApiResponse<Void>> applyBulk(@RequestBody BulkRequest request) {
-        service.applyBulk(request.operations());
+    public ResponseEntity<ApiResponse<Void>> applyBulk(@RequestBody RolePermissionBulkGrantRequest request) {
+        service.applyBulk(request.changes());
         return ApiResponse.success(MessageKeys.SUCCESS);
     }
 }
