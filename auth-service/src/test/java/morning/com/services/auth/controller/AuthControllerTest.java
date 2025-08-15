@@ -2,6 +2,7 @@ package morning.com.services.auth.controller;
 
 import morning.com.services.auth.dto.ApiResponse;
 import morning.com.services.auth.dto.*;
+import morning.com.services.auth.entity.User;
 import morning.com.services.auth.exception.AccountLockedException;
 import morning.com.services.auth.service.JwtService;
 import morning.com.services.auth.service.RefreshTokenService;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static morning.com.services.auth.dto.ApiResponse.ERROR;
@@ -78,7 +80,12 @@ class AuthControllerTest {
         when(jwtService.generateToken("user")).thenReturn("token123");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
         UUID uid1 = UUID.randomUUID();
-        when(userService.findUserIdByUsername("user")).thenReturn(uid1);
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(uid1);
+        when(user.getUsername()).thenReturn("user");
+        when(user.getEmail()).thenReturn("user@example.com");
+        when(user.getLocale()).thenReturn("en");
+        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
         when(refreshTokenService.issue(eq(uid1), any(), any())).thenReturn(new RefreshTokenService.Issued(UUID.randomUUID(),"refresh1"));
 
         long now = System.currentTimeMillis();
@@ -90,7 +97,11 @@ class AuthControllerTest {
         assertEquals(SUCCESS, body.code());
         assertEquals(MessageKeys.SUCCESS, body.messageKey());
         assertNotNull(body.data());
-        assertEquals("token123", body.data().token());
+        assertEquals(uid1, body.data().id());
+        assertEquals("user", body.data().username());
+        assertEquals("user@example.com", body.data().email());
+        assertEquals("en", body.data().locale());
+        assertEquals("token123", body.data().accessToken());
         assertEquals("Bearer", body.data().tokenType());
         assertTrue(body.data().expiresAt() > now);
         assertEquals("refresh1", body.data().refreshToken());
@@ -129,13 +140,23 @@ class AuthControllerTest {
         when(userService.findUsernameById(uid1)).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(uid1);
+        when(user.getUsername()).thenReturn("user");
+        when(user.getEmail()).thenReturn("user@example.com");
+        when(user.getLocale()).thenReturn("en");
+        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
 
         ResponseEntity<ApiResponse<AuthResponse>> response = authController.refresh(request);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
         assertEquals(SUCCESS, body.code());
-        assertEquals("token2", body.data().token());
+        assertEquals(uid1, body.data().id());
+        assertEquals("user", body.data().username());
+        assertEquals("user@example.com", body.data().email());
+        assertEquals("en", body.data().locale());
+        assertEquals("token2", body.data().accessToken());
         assertEquals("newRef", body.data().refreshToken());
     }
 
@@ -162,6 +183,12 @@ class AuthControllerTest {
         when(userService.findUsernameById(uid1)).thenReturn("user");
         when(jwtService.generateToken("user")).thenReturn("token2");
         when(jwtService.ttlMillis()).thenReturn(3_600_000L);
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(uid1);
+        when(user.getUsername()).thenReturn("user");
+        when(user.getEmail()).thenReturn("user@example.com");
+        when(user.getLocale()).thenReturn("en");
+        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
 
         ResponseEntity<ApiResponse<AuthResponse>> first = authController.refresh(request);
         assertEquals(HttpStatus.OK, first.getStatusCode());

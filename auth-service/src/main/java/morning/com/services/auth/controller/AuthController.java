@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -45,12 +44,12 @@ public class AuthController {
                                                           HttpServletRequest http) {
         if (userService.authenticate(request.username(), request.password())) {
             String username = request.username().toLowerCase();
+            var user = userService.findByUsername(username).orElseThrow();
             String token = jwtService.generateToken(username);
             long exp = System.currentTimeMillis() + jwtService.ttlMillis();
-            UUID userId = userService.findUserIdByUsername(username);
-            var issued = refreshTokenService.issue(userId, http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
+            var issued = refreshTokenService.issue(user.getId(), http.getRemoteAddr(), http.getHeader(HttpHeaders.USER_AGENT));
             return ApiResponse.success(MessageKeys.SUCCESS,
-                    new AuthResponse(token, exp, issued.rawToken()));
+                    new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), user.getLocale(), token, exp, issued.rawToken()));
         }
         return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
     }
@@ -87,10 +86,11 @@ public class AuthController {
         try {
             var rotation = refreshTokenService.verifyAndRotate(request.refreshToken());
             String username = userService.findUsernameById(rotation.userId());
+            var user = userService.findByUsername(username).orElseThrow();
             String token = jwtService.generateToken(username);
             long exp = System.currentTimeMillis() + jwtService.ttlMillis();
             return ApiResponse.success(MessageKeys.SUCCESS,
-                    new AuthResponse(token, exp, rotation.issued().rawToken()));
+                    new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), user.getLocale(), token, exp, rotation.issued().rawToken()));
         } catch (IllegalArgumentException ex) {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.INVALID_CREDENTIALS);
         }
