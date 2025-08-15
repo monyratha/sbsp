@@ -3,7 +3,7 @@ server:
 
 app:
   cors:
-    origins: https://app.example.com,https://admin.example.com
+    origins: http://localhost:5666,http://192.168.80.128:5666,http://192.168.64.1:5666
 
 eureka:
   client:
@@ -39,7 +39,7 @@ spring:
         filters:
           - RewritePath=/user/v3/api-docs(?<path>.*), /v3/api-docs$\{path}
       - id: openapi
-        uri: http://localhost:${server.port}
+        uri: http://192.168.80.128:${server.port}
         predicates:
         - Path=/v3/api-docs/**
         filters:
