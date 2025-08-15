@@ -15,8 +15,8 @@ public class PermissionSpecification {
         };
     }
 
-    public static Specification<Permission> sectionContains(String section) {
-        return (root, query, cb) -> cb.like(cb.lower(root.get("section")), "%" + section.toLowerCase() + "%");
+    public static Specification<Permission> sectionEquals(String section) {
+        return (root, query, cb) -> cb.equal(cb.lower(root.get("section")), section.toLowerCase());
     }
 
     public static Specification<Permission> codeEquals(String code) {
