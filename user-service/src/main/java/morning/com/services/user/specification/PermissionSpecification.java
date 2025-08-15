@@ -1,4 +1,4 @@
-package morning.com.services.user.repository;
+package morning.com.services.user.specification;
 
 import morning.com.services.user.entity.Permission;
 import org.springframework.data.jpa.domain.Specification;
