@@ -7,7 +7,7 @@ import morning.com.services.user.dto.PermissionResponse;
 import morning.com.services.user.entity.Permission;
 import morning.com.services.user.mapper.PermissionMapper;
 import morning.com.services.user.repository.PermissionRepository;
-import morning.com.services.user.repository.PermissionSpecification;
+import morning.com.services.user.specification.PermissionSpecification;
 import org.springframework.data.jpa.domain.Specification;
 import morning.com.services.user.exception.FieldValidationException;
 import org.springframework.data.domain.Page;
@@ -53,7 +53,7 @@ public class PermissionService {
     }
 
     public Page<PermissionResponse> search(String search, String section, String code, Pageable pageable) {
-        Specification<Permission> spec = Specification.where(null);
+        Specification<Permission> spec = Specification.allOf();
         if (search != null && !search.isBlank()) {
             spec = spec.and(PermissionSpecification.searchInAll(search));
         }
