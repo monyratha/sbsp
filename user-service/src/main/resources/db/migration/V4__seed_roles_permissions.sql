@@ -1,10 +1,10 @@
 -- Seed default roles
-INSERT INTO roles (id, name, description) VALUES
-  (UUID_TO_BIN('c3908054-dc02-43c6-8eca-969b7da54ea4'), 'Super Admin', 'Full platform access'),
-  (UUID_TO_BIN('7e6c7b80-46bd-48c4-bc05-6e8e78f06116'), 'Admin', 'Manage subscriptions and customers'),
-  (UUID_TO_BIN('4d50cf00-f990-4172-bd30-92595e2f4a02'), 'Merchant', 'Owns and manages sites, products, services'),
-  (UUID_TO_BIN('d7317200-5f5c-47a9-aa5f-023dd9fccd3a'), 'Marketing', 'Promote via referral/invite codes'),
-  (UUID_TO_BIN('09b2b833-3303-4b45-848a-883b5e66faa0'), 'Assists', 'Assists Merchant in site/product/category management');
+INSERT INTO roles (id, code, name, description) VALUES
+  (UUID_TO_BIN('c3908054-dc02-43c6-8eca-969b7da54ea4'), 'super_admin', 'Super Admin', 'Full platform access'),
+  (UUID_TO_BIN('7e6c7b80-46bd-48c4-bc05-6e8e78f06116'), 'admin', 'Admin', 'Manage subscriptions and customers'),
+  (UUID_TO_BIN('4d50cf00-f990-4172-bd30-92595e2f4a02'), 'merchant', 'Merchant', 'Owns and manages sites, products, services'),
+  (UUID_TO_BIN('d7317200-5f5c-47a9-aa5f-023dd9fccd3a'), 'marketing', 'Marketing', 'Promote via referral/invite codes'),
+  (UUID_TO_BIN('09b2b833-3303-4b45-848a-883b5e66faa0'), 'assists', 'Assists', 'Assists Merchant in site/product/category management');
 
 -- Seed permissions
 INSERT INTO permissions (id, code, section, label) VALUES

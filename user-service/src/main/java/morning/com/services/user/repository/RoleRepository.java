@@ -12,4 +12,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     List<RoleDTO> findAllByOrderByName();
 
     boolean existsByName(String name);
+
+    boolean existsByCode(String code);
 }

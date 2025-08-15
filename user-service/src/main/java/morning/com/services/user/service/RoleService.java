@@ -38,6 +38,9 @@ public class RoleService {
 
     @Transactional
     public RoleResponse add(RoleCreateRequest request) {
+        if (roleRepository.existsByCode(request.code())) {
+            throw new FieldValidationException("code", "already.exists");
+        }
         if (roleRepository.existsByName(request.name())) {
             throw new FieldValidationException("name", "already.exists");
         }
@@ -48,6 +51,25 @@ public class RoleService {
 
     public Optional<Role> findById(UUID id) {
         return roleRepository.findById(id);
+    }
+
+    @Transactional
+    public Optional<RoleResponse> update(UUID id, RoleUpdateRequest request) {
+        return roleRepository.findById(id)
+                .map(entity -> {
+                    mapper.update(entity, request);
+                    Role updated = roleRepository.save(entity);
+                    return mapper.toResponse(updated);
+                });
+    }
+
+    @Transactional
+    public boolean delete(UUID id) {
+        if (!roleRepository.existsById(id)) {
+            return false;
+        }
+        roleRepository.deleteById(id);
+        return true;
     }
 
     @Transactional

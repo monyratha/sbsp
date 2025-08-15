@@ -39,19 +39,19 @@ class RoleControllerTest {
 
     @Test
     void createWhenInvalidFieldsReturnsErrors() throws Exception {
-        String payload = "{\"name\":\"\",\"description\":\"\"}";
+        String payload = "{\"code\":\"\",\"name\":\"\",\"description\":\"\"}";
         mockMvc.perform(post("/user/role")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messageKey").value(MessageKeys.VALIDATION_ERROR))
-                .andExpect(jsonPath("$.data.name").exists());
+                .andExpect(jsonPath("$.data.code").exists());
     }
 
     @Test
     void createWhenDuplicateNameReturnsFieldError() throws Exception {
         when(service.add(any())).thenThrow(new FieldValidationException("name", "already exists"));
-        String payload = "{\"name\":\"admin\",\"description\":\"\"}";
+        String payload = "{\"code\":\"admin\",\"name\":\"admin\",\"description\":\"\"}";
         mockMvc.perform(post("/user/role")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))

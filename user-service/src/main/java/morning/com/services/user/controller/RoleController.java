@@ -1,8 +1,9 @@
 package morning.com.services.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import morning.com.services.user.dto.*;
 import morning.com.services.user.service.RoleService;
-import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,23 @@ public class RoleController {
                 saved,
                 "/role/" + saved.id()
         );
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update existing role")
+    public ResponseEntity<ApiResponse<RoleResponse>> update(@PathVariable UUID id,
+                                                            @Validated @RequestBody RoleUpdateRequest request) {
+        return service.update(id, request)
+                .map(resp -> ApiResponse.success(MessageKeys.SUCCESS, resp))
+                .orElseGet(() -> ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.ROLE_NOT_FOUND));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete role")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+        return service.delete(id)
+                ? ApiResponse.success(MessageKeys.SUCCESS)
+                : ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.ROLE_NOT_FOUND);
     }
 
     @GetMapping("/acl-matrix")

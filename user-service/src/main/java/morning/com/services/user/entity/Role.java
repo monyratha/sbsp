@@ -33,6 +33,9 @@ public class Role {
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 100)
+    private String code;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
 
     @Column(length = 255)

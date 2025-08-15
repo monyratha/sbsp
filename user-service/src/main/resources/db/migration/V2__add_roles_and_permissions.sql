@@ -2,9 +2,11 @@
 CREATE TABLE roles
 (
     id   BINARY(16) NOT NULL,
+    code VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
 
     CONSTRAINT pk_roles PRIMARY KEY (id),
+    CONSTRAINT ux_roles_code UNIQUE (code),
     CONSTRAINT ux_roles_name UNIQUE (name)
 ) ENGINE=InnoDB
   DEFAULT CHARSET = utf8mb4

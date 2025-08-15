@@ -50,12 +50,25 @@ class RoleServiceTest {
 
     @Test
     void addWhenNameExistsThrowsFieldValidationException() {
-        RoleCreateRequest request = new RoleCreateRequest("admin", null);
-        when(roleRepository.existsByName("admin")).thenReturn(true);
+        RoleCreateRequest request = new RoleCreateRequest("admin", "Admin", null);
+        when(roleRepository.existsByCode("admin")).thenReturn(false);
+        when(roleRepository.existsByName("Admin")).thenReturn(true);
 
         assertThrows(FieldValidationException.class, () -> service.add(request));
 
-        verify(roleRepository).existsByName("admin");
+        verify(roleRepository).existsByCode("admin");
+        verify(roleRepository).existsByName("Admin");
+        verifyNoMoreInteractions(roleRepository);
+    }
+
+    @Test
+    void addWhenCodeExistsThrowsFieldValidationException() {
+        RoleCreateRequest request = new RoleCreateRequest("admin", "Admin", null);
+        when(roleRepository.existsByCode("admin")).thenReturn(true);
+
+        assertThrows(FieldValidationException.class, () -> service.add(request));
+
+        verify(roleRepository).existsByCode("admin");
         verifyNoMoreInteractions(roleRepository);
     }
 
@@ -75,7 +88,7 @@ class RoleServiceTest {
 
     @Test
     void getMatrixCombinesDataFromRepositories() {
-        RoleDTO role = new RoleDTO(UUID.randomUUID(), "admin");
+        RoleDTO role = new RoleDTO(UUID.randomUUID(), "admin", "Admin");
         PermissionDTO perm = new PermissionDTO(UUID.randomUUID(), "code", "sec", "label");
 
         RolePermissionRepository.RolePermissionEdgeView edge = mock(RolePermissionRepository.RolePermissionEdgeView.class);
