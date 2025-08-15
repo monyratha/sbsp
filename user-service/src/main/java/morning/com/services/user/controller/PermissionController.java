@@ -34,8 +34,8 @@ public class PermissionController {
     public ResponseEntity<ApiResponse<PageResult<PermissionResponse>>> list(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String section,
             @RequestParam(required = false) String code) {
