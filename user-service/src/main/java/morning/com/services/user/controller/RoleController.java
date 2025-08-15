@@ -3,6 +3,9 @@ package morning.com.services.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import morning.com.services.user.dto.*;
 import morning.com.services.user.service.RoleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +20,24 @@ public class RoleController {
 
     public RoleController(RoleService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    @Operation(summary = "List roles")
+    public ResponseEntity<ApiResponse<PageResult<RoleResponse>>> list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String name) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Page<RoleResponse> result = service.search(search, code, name,
+                PageRequest.of(Math.max(page - 1, 0), size, sort));
+        return ApiResponse.success(MessageKeys.SUCCESS, PageResult.from(result));
     }
 
     @PostMapping

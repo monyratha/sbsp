@@ -10,6 +10,10 @@ import morning.com.services.user.repository.PermissionRepository;
 import morning.com.services.user.repository.RolePermissionRepository;
 import morning.com.services.user.repository.RoleRepository;
 import morning.com.services.user.repository.UserProfileRepository;
+import morning.com.services.user.specification.RoleSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +55,21 @@ public class RoleService {
 
     public Optional<Role> findById(UUID id) {
         return roleRepository.findById(id);
+    }
+
+    public Page<RoleResponse> search(String search, String code, String name, Pageable pageable) {
+        Specification<Role> spec = Specification.allOf();
+        if (search != null && !search.isBlank()) {
+            spec = spec.and(RoleSpecification.searchInAll(search));
+        }
+        if (code != null && !code.isBlank()) {
+            spec = spec.and(RoleSpecification.codeEquals(code));
+        }
+        if (name != null && !name.isBlank()) {
+            spec = spec.and(RoleSpecification.nameEquals(name));
+        }
+        Page<Role> page = roleRepository.findAll(spec, pageable);
+        return page.map(mapper::toResponse);
     }
 
     @Transactional
