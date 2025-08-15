@@ -58,7 +58,7 @@ public class PermissionService {
             spec = spec.and(PermissionSpecification.searchInAll(search));
         }
         if (section != null && !section.isBlank()) {
-            spec = spec.and(PermissionSpecification.sectionContains(section));
+            spec = spec.and(PermissionSpecification.sectionEquals(section));
         }
         if (code != null && !code.isBlank()) {
             spec = spec.and(PermissionSpecification.codeEquals(code));
