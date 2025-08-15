@@ -57,7 +57,12 @@ class PermissionControllerTest {
                         .param("section", "SEC")
                         .param("code", "CODE"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].id").value(resp.id().toString()));
+                .andExpect(jsonPath("$.data.items[0].id").value(resp.id().toString()))
+                .andExpect(jsonPath("$.data.page").value(1))
+                .andExpect(jsonPath("$.data.size").value(10))
+                .andExpect(jsonPath("$.data.total").value(1))
+                .andExpect(jsonPath("$.data.totalPages").value(1))
+                .andExpect(jsonPath("$.data.hasNext").value(false));
     }
 
     @Test

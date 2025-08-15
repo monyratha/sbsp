@@ -7,6 +7,7 @@ import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.dto.PermissionCreateRequest;
 import morning.com.services.user.dto.PermissionResponse;
 import morning.com.services.user.dto.PermissionUpdateRequest;
+import morning.com.services.user.dto.PageResponse;
 import morning.com.services.user.service.PermissionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,7 @@ public class PermissionController {
 
     @GetMapping
     @Operation(summary = "List permissions")
-    public ResponseEntity<ApiResponse<Page<PermissionResponse>>> list(
+    public ResponseEntity<ApiResponse<PageResponse<PermissionResponse>>> list(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -43,7 +44,7 @@ public class PermissionController {
                 : Sort.by(sortBy).ascending();
         Page<PermissionResponse> result = service.search(search, section, code,
                 PageRequest.of(Math.max(page - 1, 0), size, sort));
-        return ApiResponse.success(MessageKeys.SUCCESS, result);
+        return ApiResponse.success(MessageKeys.SUCCESS, PageResponse.from(result));
     }
 
     @PostMapping
