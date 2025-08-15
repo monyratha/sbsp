@@ -64,7 +64,7 @@ class PermissionControllerTest {
         PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "C", "S", "L", Instant.now(), Instant.now());
         when(service.addBulk(anyList())).thenReturn(List.of(resp));
         String payload = "[{\"code\":\"C\",\"section\":\"S\",\"label\":\"L\"}]";
-        mockMvc.perform(post("/user/permission/_bulk")
+        mockMvc.perform(post("/user/permission/bulk")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
@@ -75,7 +75,7 @@ class PermissionControllerTest {
     void bulkDeleteReturnsSuccess() throws Exception {
         doNothing().when(service).deleteBulk(anyList());
         String payload = "[\"" + UUID.randomUUID() + "\"]";
-        mockMvc.perform(delete("/user/permission/_bulk")
+        mockMvc.perform(delete("/user/permission/bulk")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
