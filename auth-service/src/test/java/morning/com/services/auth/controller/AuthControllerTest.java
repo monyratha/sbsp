@@ -18,8 +18,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.UUID;
 
-import static morning.com.services.auth.dto.ApiResponse.Status.ERROR;
-import static morning.com.services.auth.dto.ApiResponse.Status.SUCCESS;
+import static morning.com.services.auth.dto.ApiResponse.ERROR;
+import static morning.com.services.auth.dto.ApiResponse.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +47,7 @@ class AuthControllerTest {
 
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(SUCCESS, body.status());
+        assertEquals(SUCCESS, body.code());
         assertEquals(MessageKeys.USER_REGISTERED, body.messageKey());
         verify(userService).register("user", "password");
     }
@@ -63,7 +63,7 @@ class AuthControllerTest {
 
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ERROR, body.status());
+        assertEquals(ERROR, body.code());
         assertEquals(MessageKeys.USERNAME_EXISTS, body.messageKey());
     }
 
@@ -87,7 +87,7 @@ class AuthControllerTest {
 
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(SUCCESS, body.status());
+        assertEquals(SUCCESS, body.code());
         assertEquals(MessageKeys.SUCCESS, body.messageKey());
         assertNotNull(body.data());
         assertEquals("token123", body.data().token());
@@ -106,7 +106,7 @@ class AuthControllerTest {
 
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ERROR, body.status());
+        assertEquals(ERROR, body.code());
         assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
         assertNull(body.data());
     }
@@ -134,7 +134,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(SUCCESS, body.status());
+        assertEquals(SUCCESS, body.code());
         assertEquals("token2", body.data().token());
         assertEquals("newRef", body.data().refreshToken());
     }
@@ -148,7 +148,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         ApiResponse<AuthResponse> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ERROR, body.status());
+        assertEquals(ERROR, body.code());
         assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
     }
 
@@ -170,7 +170,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, second.getStatusCode());
         ApiResponse<AuthResponse> body = second.getBody();
         assertNotNull(body);
-        assertEquals(ERROR, body.status());
+        assertEquals(ERROR, body.code());
     }
 
     @Test
@@ -183,7 +183,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(SUCCESS, body.status());
+        assertEquals(SUCCESS, body.code());
         assertEquals(MessageKeys.PASSWORD_CHANGED, body.messageKey());
     }
 
@@ -197,7 +197,7 @@ class AuthControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         ApiResponse<Void> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ERROR, body.status());
+        assertEquals(ERROR, body.code());
         assertEquals(MessageKeys.INVALID_CREDENTIALS, body.messageKey());
     }
 }

@@ -42,7 +42,7 @@ class UserProfileControllerTest {
         assertEquals(201, result.getStatusCodeValue());
         ApiResponse<UserProfile> body = result.getBody();
         assertNotNull(body);
-        assertEquals(ApiResponse.Status.SUCCESS, body.status());
+        assertEquals(ApiResponse.SUCCESS, body.code());
         assertEquals(MessageKeys.PROFILE_CREATED, body.messageKey());
         assertSame(saved, body.data());
         verify(service).add(input);
@@ -59,7 +59,7 @@ class UserProfileControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         ApiResponse<UserProfile> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ApiResponse.Status.SUCCESS, body.status());
+        assertEquals(ApiResponse.SUCCESS, body.code());
         assertEquals(MessageKeys.SUCCESS, body.messageKey());
         assertSame(saved, body.data());
         verify(service).findById(id);
@@ -75,7 +75,7 @@ class UserProfileControllerTest {
         assertEquals(404, response.getStatusCodeValue());
         ApiResponse<UserProfile> body = response.getBody();
         assertNotNull(body);
-        assertEquals(ApiResponse.Status.ERROR, body.status());
+        assertEquals(ApiResponse.ERROR, body.code());
         assertEquals(MessageKeys.PROFILE_NOT_FOUND, body.messageKey());
         assertNull(body.data());
         verify(service).findById(missing);
