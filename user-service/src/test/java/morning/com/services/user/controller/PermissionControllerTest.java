@@ -2,6 +2,7 @@ package morning.com.services.user.controller;
 
 import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.dto.PermissionResponse;
+import morning.com.services.user.exception.FieldValidationException;
 import morning.com.services.user.service.PermissionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,31 @@ class PermissionControllerTest {
         mockMvc.perform(get("/user/permission").param("search", "test"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content[0].id").value(resp.id().toString()));
+    }
+
+    @Test
+    void createWhenInvalidFieldsReturnsErrors() throws Exception {
+        String payload = "{\"code\":\"\",\"section\":\"\",\"label\":\"\"}";
+        mockMvc.perform(post("/user/permission")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messageKey").value(MessageKeys.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.data.code").exists())
+                .andExpect(jsonPath("$.data.section").exists())
+                .andExpect(jsonPath("$.data.label").exists());
+    }
+
+    @Test
+    void createWhenDuplicateCodeReturnsFieldError() throws Exception {
+        when(service.add(any())).thenThrow(new FieldValidationException("code", "already exists"));
+        String payload = "{\"code\":\"A\",\"section\":\"S\",\"label\":\"L\"}";
+        mockMvc.perform(post("/user/permission")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messageKey").value(MessageKeys.VALIDATION_ERROR))
+                .andExpect(jsonPath("$.data.code").value("already exists"));
     }
 
     @Test
