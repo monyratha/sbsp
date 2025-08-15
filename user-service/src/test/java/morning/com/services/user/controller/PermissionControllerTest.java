@@ -50,9 +50,12 @@ class PermissionControllerTest {
     void listReturnsPermissions() throws Exception {
         PermissionResponse resp = new PermissionResponse(UUID.randomUUID(), "CODE", "SEC", "LBL", Instant.now(), Instant.now());
         Page<PermissionResponse> page = new PageImpl<>(List.of(resp), PageRequest.of(0, 10), 1);
-        when(service.search(eq("test"), any())).thenReturn(page);
+        when(service.search(eq("test"), eq("SEC"), eq("CODE"), any())).thenReturn(page);
 
-        mockMvc.perform(get("/user/permission").param("search", "test"))
+        mockMvc.perform(get("/user/permission")
+                        .param("search", "test")
+                        .param("section", "SEC")
+                        .param("code", "CODE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content[0].id").value(resp.id().toString()));
     }

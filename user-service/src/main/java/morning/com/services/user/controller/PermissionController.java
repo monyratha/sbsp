@@ -35,11 +35,14 @@ public class PermissionController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String section,
+            @RequestParam(required = false) String code) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
-        Page<PermissionResponse> result = service.search(search, PageRequest.of(Math.max(page - 1, 0), size, sort));
+        Page<PermissionResponse> result = service.search(search, section, code,
+                PageRequest.of(Math.max(page - 1, 0), size, sort));
         return ApiResponse.success(MessageKeys.SUCCESS, result);
     }
 
