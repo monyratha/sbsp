@@ -1,28 +1,38 @@
 package morning.com.services.user.repository;
 
 import morning.com.services.user.entity.RolePermission;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface RolePermissionRepository extends Repository<RolePermission, RolePermission.Id> {
+/**
+ * Repository for managing entries in the {@code role_permissions} join table
+ * without relying on native SQL queries. Grant and revoke operations are
+ * implemented using standard JPA {@link JpaRepository} methods.
+ */
+public interface RolePermissionRepository extends JpaRepository<RolePermission, RolePermission.Id> {
 
     interface RolePermissionEdgeView {
-        UUID getRoleId();
-        UUID getPermissionId();
+        RolePermission.Id getId();
+
+        default UUID getRoleId() {
+            return getId().getRoleId();
+        }
+
+        default UUID getPermissionId() {
+            return getId().getPermissionId();
+        }
     }
 
-    @Query("select rp.id.roleId as roleId, rp.id.permissionId as permissionId from RolePermission rp")
-    List<RolePermissionEdgeView> findAllRolePermissionEdges();
+    List<RolePermissionEdgeView> findAllProjectedBy();
 
-    @Modifying
-    @Query(value = "insert into role_permissions(role_id, permission_id) values (?1, ?2) on duplicate key update permission_id = permission_id", nativeQuery = true)
-    void grant(UUID roleId, UUID permId);
+    default void grant(UUID roleId, UUID permId) {
+        save(new RolePermission(new RolePermission.Id(roleId, permId)));
+    }
 
-    @Modifying
-    @Query(value = "delete from role_permissions where role_id = ?1 and permission_id = ?2", nativeQuery = true)
-    void revoke(UUID roleId, UUID permId);
+    default void revoke(UUID roleId, UUID permId) {
+        deleteById(new RolePermission.Id(roleId, permId));
+    }
 }
+

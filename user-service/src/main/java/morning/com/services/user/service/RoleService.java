@@ -59,9 +59,9 @@ public class RoleService {
     }
 
     public MatrixResponse getMatrix() {
-        List<RoleDTO> roles = roleRepository.findAllProjectedBy();
+        List<RoleDTO> roles = roleRepository.findAllByOrderByName();
         List<PermissionDTO> permissions = permissionRepository.findAllByOrderBySectionAscLabelAsc();
-        List<RolePermissionEdge> edges = rolePermissionRepository.findAllRolePermissionEdges().stream()
+        List<RolePermissionEdge> edges = rolePermissionRepository.findAllProjectedBy().stream()
                 .map(e -> new RolePermissionEdge(e.getRoleId(), e.getPermissionId()))
                 .toList();
         return new MatrixResponse(roles, permissions, edges);

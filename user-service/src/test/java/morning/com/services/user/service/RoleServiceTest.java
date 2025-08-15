@@ -82,9 +82,9 @@ class RoleServiceTest {
         when(edge.getRoleId()).thenReturn(role.id());
         when(edge.getPermissionId()).thenReturn(perm.id());
 
-        when(roleRepository.findAllProjectedBy()).thenReturn(List.of(role));
+        when(roleRepository.findAllByOrderByName()).thenReturn(List.of(role));
         when(permissionRepository.findAllByOrderBySectionAscLabelAsc()).thenReturn(List.of(perm));
-        when(rolePermissionRepository.findAllRolePermissionEdges()).thenReturn(List.of(edge));
+        when(rolePermissionRepository.findAllProjectedBy()).thenReturn(List.of(edge));
 
         MatrixResponse matrix = service.getMatrix();
 
@@ -92,9 +92,9 @@ class RoleServiceTest {
         assertEquals(List.of(perm), matrix.permissions());
         assertEquals(List.of(new RolePermissionEdge(role.id(), perm.id())), matrix.grants());
 
-        verify(roleRepository).findAllProjectedBy();
+        verify(roleRepository).findAllByOrderByName();
         verify(permissionRepository).findAllByOrderBySectionAscLabelAsc();
-        verify(rolePermissionRepository).findAllRolePermissionEdges();
+        verify(rolePermissionRepository).findAllProjectedBy();
     }
 }
 
