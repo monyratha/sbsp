@@ -10,6 +10,7 @@ import morning.com.services.user.repository.PermissionRepository;
 import morning.com.services.user.exception.FieldValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,13 +52,19 @@ public class PermissionService {
     }
 
     public Page<PermissionResponse> search(String search, Pageable pageable) {
-        Page<Permission> page;
+        Specification<Permission> spec = null;
         if (search != null && !search.isBlank()) {
-            page = repository.findByCodeContainingIgnoreCaseOrSectionContainingIgnoreCaseOrLabelContainingIgnoreCase(
-                    search, search, search, pageable);
-        } else {
-            page = repository.findAll(pageable);
+            String like = "%" + search.toLowerCase() + "%";
+            spec = (root, query, cb) -> cb.or(
+                    cb.like(cb.lower(root.get("code")), like),
+                    cb.like(cb.lower(root.get("section")), like),
+                    cb.like(cb.lower(root.get("label")), like)
+            );
         }
+
+        Page<Permission> page = (spec != null)
+                ? repository.findAll(spec, pageable)
+                : repository.findAll(pageable);
         return page.map(mapper::toResponse);
     }
 
