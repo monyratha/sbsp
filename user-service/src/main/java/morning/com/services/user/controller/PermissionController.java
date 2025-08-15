@@ -65,7 +65,7 @@ public class PermissionController {
                 .orElseGet(() -> ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PERMISSION_NOT_FOUND));
     }
 
-    @PostMapping("/_bulk")
+    @PostMapping("/bulk")
     @Operation(summary = "Create permissions in bulk")
     public ResponseEntity<ApiResponse<List<PermissionResponse>>> bulkCreate(
             @RequestBody List<@Valid PermissionCreateRequest> requests) {
@@ -80,7 +80,7 @@ public class PermissionController {
                 : ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PERMISSION_NOT_FOUND);
     }
 
-    @DeleteMapping("/_bulk")
+    @DeleteMapping("/bulk")
     @Operation(summary = "Delete permissions in bulk")
     public ResponseEntity<ApiResponse<Void>> bulkDelete(@RequestBody List<UUID> ids) {
         service.deleteBulk(ids);
