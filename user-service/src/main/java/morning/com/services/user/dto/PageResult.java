@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Minimal wrapper for paginated responses.
  */
-public record PageResponse<T>(
+public record PageResult<T>(
         List<T> items,
         int page,
         int size,
@@ -15,8 +15,8 @@ public record PageResponse<T>(
         int totalPages,
         boolean hasNext) {
 
-    public static <T> PageResponse<T> from(Page<T> page) {
-        return new PageResponse<>(
+    public static <T> PageResult<T> from(Page<T> page) {
+        return new PageResult<>(
                 page.getContent(),
                 page.getNumber() + 1,
                 page.getSize(),
