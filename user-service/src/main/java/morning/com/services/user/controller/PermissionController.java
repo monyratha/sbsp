@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user/permission")
+@RequestMapping("/user/api/permission")
 public class PermissionController {
     private final PermissionService service;
 
@@ -48,6 +49,7 @@ public class PermissionController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Create new permission")
     public ResponseEntity<ApiResponse<PermissionResponse>> create(
             @Validated @RequestBody PermissionCreateRequest request) {
@@ -55,11 +57,12 @@ public class PermissionController {
         return ApiResponse.created(
                 MessageKeys.PERMISSION_CREATED,
                 saved,
-                "/permission/" + saved.id()
+                "/user/api/permission/" + saved.id()
         );
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Update existing permission")
     public ResponseEntity<ApiResponse<PermissionResponse>> update(
             @PathVariable UUID id,
@@ -70,6 +73,7 @@ public class PermissionController {
     }
 
     @PostMapping("/bulk")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Create permissions in bulk")
     public ResponseEntity<ApiResponse<List<PermissionResponse>>> bulkCreate(
             @RequestBody List<@Valid PermissionCreateRequest> requests) {
@@ -77,6 +81,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Delete permission")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         return service.delete(id)
@@ -85,6 +90,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/bulk")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Delete permissions in bulk")
     public ResponseEntity<ApiResponse<Void>> bulkDelete(@RequestBody List<UUID> ids) {
         service.deleteBulk(ids);
