@@ -56,7 +56,7 @@ class RoleControllerTest {
         Page<RoleResponse> page = new PageImpl<>(List.of(resp), PageRequest.of(0, 10), 1);
         when(service.search(eq("test"), eq("CODE"), eq("NAME"), any())).thenReturn(page);
 
-        mockMvc.perform(get("/user/role")
+        mockMvc.perform(get("/user/api/role")
                         .param("search", "test")
                         .param("code", "CODE")
                         .param("name", "NAME"))
@@ -74,7 +74,7 @@ class RoleControllerTest {
         Page<RoleResponse> page = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
         when(service.search(isNull(), isNull(), isNull(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/user/role"))
+        mockMvc.perform(get("/user/api/role"))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
@@ -87,7 +87,7 @@ class RoleControllerTest {
     @Test
     void createWhenInvalidFieldsReturnsErrors() throws Exception {
         String payload = "{\"code\":\"\",\"name\":\"\",\"description\":\"\"}";
-        mockMvc.perform(post("/user/role")
+        mockMvc.perform(post("/user/api/role")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
                 .andExpect(status().isBadRequest())
@@ -99,7 +99,7 @@ class RoleControllerTest {
     void createWhenDuplicateNameReturnsFieldError() throws Exception {
         when(service.add(any())).thenThrow(new FieldValidationException("name", "already exists"));
         String payload = "{\"code\":\"admin\",\"name\":\"admin\",\"description\":\"\"}";
-        mockMvc.perform(post("/user/role")
+        mockMvc.perform(post("/user/api/role")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
                 .andExpect(status().isBadRequest())
