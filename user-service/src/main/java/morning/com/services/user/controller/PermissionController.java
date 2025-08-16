@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +50,7 @@ public class PermissionController {
 
     @PostMapping
     @Operation(summary = "Create new permission")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<PermissionResponse>> create(
             @Validated @RequestBody PermissionCreateRequest request) {
         PermissionResponse saved = service.add(request);
@@ -61,6 +63,7 @@ public class PermissionController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update existing permission")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<PermissionResponse>> update(
             @PathVariable UUID id,
             @Validated @RequestBody PermissionUpdateRequest request) {
@@ -71,6 +74,7 @@ public class PermissionController {
 
     @PostMapping("/bulk")
     @Operation(summary = "Create permissions in bulk")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<List<PermissionResponse>>> bulkCreate(
             @RequestBody List<@Valid PermissionCreateRequest> requests) {
         return ApiResponse.success(MessageKeys.SUCCESS, service.addBulk(requests));
@@ -78,6 +82,7 @@ public class PermissionController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete permission")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         return service.delete(id)
                 ? ApiResponse.success(MessageKeys.SUCCESS)
@@ -86,6 +91,7 @@ public class PermissionController {
 
     @DeleteMapping("/bulk")
     @Operation(summary = "Delete permissions in bulk")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<Void>> bulkDelete(@RequestBody List<UUID> ids) {
         service.deleteBulk(ids);
         return ApiResponse.success(MessageKeys.SUCCESS);
