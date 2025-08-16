@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class RoleController {
 
     @PostMapping
     @Operation(summary = "Create new role")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<RoleResponse>> create(
             @Validated @RequestBody RoleCreateRequest request) {
         RoleResponse saved = service.add(request);
@@ -54,6 +56,7 @@ public class RoleController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update existing role")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<RoleResponse>> update(@PathVariable UUID id,
                                                             @Validated @RequestBody RoleUpdateRequest request) {
         return service.update(id, request)
@@ -63,6 +66,7 @@ public class RoleController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete role")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         return service.delete(id)
                 ? ApiResponse.success(MessageKeys.SUCCESS)
@@ -77,6 +81,7 @@ public class RoleController {
 
     @PatchMapping("/{roleId}/permissions/{permId}")
     @Operation(summary = "Grant or revoke role permission")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<Void>> toggle(@PathVariable UUID roleId,
                                                     @PathVariable UUID permId,
                                                     @RequestBody RolePermissionGrantRequest request) {
@@ -86,6 +91,7 @@ public class RoleController {
 
     @PostMapping("/acl-matrix")
     @Operation(summary = "Apply bulk permission operations")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<Void>> applyBulk(@RequestBody RolePermissionBulkGrantRequest request) {
         service.applyBulk(request.changes());
         return ApiResponse.success(MessageKeys.SUCCESS);

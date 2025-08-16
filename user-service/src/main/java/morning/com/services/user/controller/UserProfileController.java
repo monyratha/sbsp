@@ -8,6 +8,7 @@ import morning.com.services.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class UserProfileController {
 
     @PostMapping
     @Operation(summary = "Create new user profile")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<UserProfile>> create(@RequestBody UserProfile profile) {
         UserProfile saved = service.add(profile);
         return ApiResponse.created(
@@ -44,6 +46,7 @@ public class UserProfileController {
 
     @PostMapping("/{id}/roles/{roleId}")
     @Operation(summary = "Add role to user")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<UserProfile>> addRole(@PathVariable UUID id, @PathVariable UUID roleId) {
         if (service.findById(id).isEmpty()) {
             return ApiResponse.error(HttpStatus.NOT_FOUND, MessageKeys.PROFILE_NOT_FOUND);

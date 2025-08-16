@@ -38,6 +38,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH_ISSUER_URI:http://localhost:8080}
+          jwk-set-uri: ${OAUTH_JWK_SET_URI:http://localhost:8080/.well-known/jwks.json}
 
 management:
   tracing:
