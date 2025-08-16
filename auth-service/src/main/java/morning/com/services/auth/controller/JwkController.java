@@ -4,6 +4,7 @@ import morning.com.services.auth.service.JwtService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,7 +17,7 @@ public class JwkController {
 
     @GetMapping("/.well-known/jwks.json")
     public Map<String, Object> jwk() {
-        return jwtService.jwk();
+        return Map.<String, Object>of("keys", List.of(jwtService.jwk()));
     }
 }
 
