@@ -42,7 +42,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth-service:9000
+          issuer-uri: http://localhost:8060
 
 management:
   tracing:
