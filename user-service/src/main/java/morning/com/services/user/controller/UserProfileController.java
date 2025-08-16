@@ -8,12 +8,13 @@ import morning.com.services.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/api")
 public class UserProfileController {
     private final UserProfileService service;
     private final RoleService roleService;
@@ -24,13 +25,14 @@ public class UserProfileController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Create new user profile")
     public ResponseEntity<ApiResponse<UserProfile>> create(@RequestBody UserProfile profile) {
         UserProfile saved = service.add(profile);
         return ApiResponse.created(
                 MessageKeys.PROFILE_CREATED,
                 saved,
-                "/user/" + saved.getUserId()
+                "/user/api/" + saved.getUserId()
         );
     }
 
@@ -43,6 +45,7 @@ public class UserProfileController {
     }
 
     @PostMapping("/{id}/roles/{roleId}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Add role to user")
     public ResponseEntity<ApiResponse<UserProfile>> addRole(@PathVariable UUID id, @PathVariable UUID roleId) {
         if (service.findById(id).isEmpty()) {

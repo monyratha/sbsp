@@ -8,13 +8,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user/role")
+@RequestMapping("/user/api/role")
 public class RoleController {
     private final RoleService service;
 
@@ -41,6 +42,7 @@ public class RoleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Create new role")
     public ResponseEntity<ApiResponse<RoleResponse>> create(
             @Validated @RequestBody RoleCreateRequest request) {
@@ -48,11 +50,12 @@ public class RoleController {
         return ApiResponse.created(
                 MessageKeys.ROLE_CREATED,
                 saved,
-                "/role/" + saved.id()
+                "/user/api/role/" + saved.id()
         );
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Update existing role")
     public ResponseEntity<ApiResponse<RoleResponse>> update(@PathVariable UUID id,
                                                             @Validated @RequestBody RoleUpdateRequest request) {
@@ -62,6 +65,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Delete role")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         return service.delete(id)
@@ -76,6 +80,7 @@ public class RoleController {
     }
 
     @PatchMapping("/{roleId}/permissions/{permId}")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Grant or revoke role permission")
     public ResponseEntity<ApiResponse<Void>> toggle(@PathVariable UUID roleId,
                                                     @PathVariable UUID permId,
@@ -85,6 +90,7 @@ public class RoleController {
     }
 
     @PostMapping("/acl-matrix")
+    @PreAuthorize("hasAuthority('SCOPE_user.write')")
     @Operation(summary = "Apply bulk permission operations")
     public ResponseEntity<ApiResponse<Void>> applyBulk(@RequestBody RolePermissionBulkGrantRequest request) {
         service.applyBulk(request.changes());
