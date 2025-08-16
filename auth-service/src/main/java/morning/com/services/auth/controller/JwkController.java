@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/.well-known")
+@RequestMapping("/auth")
 public class JwkController {
     private final JwtService jwtService;
 
@@ -17,7 +17,7 @@ public class JwkController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/jwks.json")
+    @GetMapping("/.well-known/jwks.json")
     public Map<String, Object> keys() {
         return Map.of("keys", List.of(jwtService.jwk()));
     }
