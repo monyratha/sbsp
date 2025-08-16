@@ -15,7 +15,7 @@ public class JwkController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/.well-known/jwks.json")
+    @GetMapping("/.well-known/openid-configuration")
     public Map<String, Object> keys() {
         return Map.of("keys", List.of(jwtService.jwk()));
     }

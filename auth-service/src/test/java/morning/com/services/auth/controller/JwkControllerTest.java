@@ -27,7 +27,7 @@ class JwkControllerTest {
     void exposesJwk() throws Exception {
         when(jwtService.jwk()).thenReturn(Map.of("kty", "RSA"));
 
-        mvc.perform(get("/.well-known/jwks.json"))
+        mvc.perform(get("/.well-known/openid-configuration"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.keys[0].kty").value("RSA"));
     }
