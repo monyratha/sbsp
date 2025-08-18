@@ -14,5 +14,7 @@ public final class MessageKeys {
     public static final String ROLE_NOT_FOUND = "user.role.not_found";
     public static final String PERMISSION_CREATED = "user.permission.created";
     public static final String PERMISSION_NOT_FOUND = "user.permission.not_found";
+    public static final String UNAUTHORIZED = "user.unauthorized";
+    public static final String FORBIDDEN = "user.forbidden";
 }
 

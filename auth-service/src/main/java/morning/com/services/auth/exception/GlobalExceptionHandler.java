@@ -25,4 +25,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleAccountLocked(AccountLockedException ex) {
         return ApiResponse.error(HttpStatus.LOCKED, MessageKeys.ACCOUNT_LOCKED);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
+        return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException ex) {
+        return ApiResponse.error(HttpStatus.FORBIDDEN, MessageKeys.FORBIDDEN);
+    }
 }

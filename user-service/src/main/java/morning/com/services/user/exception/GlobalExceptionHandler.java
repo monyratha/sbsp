@@ -31,5 +31,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Map<String, String>>> handleIllegalArgument(IllegalArgumentException ex) {
         return ApiResponse.error(HttpStatus.BAD_REQUEST, MessageKeys.VALIDATION_ERROR, Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
+        return ApiResponse.error(HttpStatus.UNAUTHORIZED, MessageKeys.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException ex) {
+        return ApiResponse.error(HttpStatus.FORBIDDEN, MessageKeys.FORBIDDEN);
+    }
 }
 
