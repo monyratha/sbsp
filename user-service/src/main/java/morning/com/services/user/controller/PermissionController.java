@@ -50,7 +50,6 @@ public class PermissionController {
 
     @PostMapping
     @Operation(summary = "Create new permission")
-    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiResponse<PermissionResponse>> create(
             @Validated @RequestBody PermissionCreateRequest request) {
         PermissionResponse saved = service.add(request);
