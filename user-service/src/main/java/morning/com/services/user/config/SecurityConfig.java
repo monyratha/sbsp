@@ -1,13 +1,9 @@
 package morning.com.services.user.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import morning.com.services.user.dto.ApiResponse;
-import morning.com.services.user.dto.MessageKeys;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -35,25 +31,22 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        JsonAuthenticationEntryPoint entryPoint = new JsonAuthenticationEntryPoint(objectMapper);
+        JsonAccessDeniedHandler accessDeniedHandler = new JsonAccessDeniedHandler(objectMapper);
+
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/user/public/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            )
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((req, res, e) -> {
-                    res.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    objectMapper.writeValue(res.getOutputStream(), new ApiResponse<Void>(ApiResponse.ERROR, MessageKeys.UNAUTHORIZED, null));
-                })
-                .accessDeniedHandler((req, res, e) -> {
-                    res.setStatus(HttpStatus.FORBIDDEN.value());
-                    res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    objectMapper.writeValue(res.getOutputStream(), new ApiResponse<Void>(ApiResponse.ERROR, MessageKeys.FORBIDDEN, null));
-                })
+                .authenticationEntryPoint(entryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .authenticationEntryPoint(entryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
             );
         return http.build();
     }
