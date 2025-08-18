@@ -32,6 +32,10 @@ spring:
           - Path=/auth/**
         filters:
           - RewritePath=/auth/v3/api-docs(?<path>.*), /v3/api-docs$\{path}
+      - id: jwk
+        uri: lb://auth-service
+        predicates:
+          - Path=/.well-known/jwks.json
       - id: user-service
         uri: lb://user-service
         predicates:
