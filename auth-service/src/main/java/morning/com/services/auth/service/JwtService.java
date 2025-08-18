@@ -73,7 +73,8 @@ public class JwtService {
                 .setIssuer(issuer)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + ttlMillis))
-                .claim("scope", "user.read user.write")
+                .setHeaderParam("kid", this.keyId)
+                .claim("authorities", java.util.List.of("user:read","user:write"))
                 .claim("aud", java.util.List.of("user-service"))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();

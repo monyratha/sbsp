@@ -46,7 +46,7 @@ security:
     public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3lTRP1TG2SnR9HaLTfTJBDrHhUDsnBtyWL9nTgMAOu/1InA46Iby05GOywX0uN4x5wdJc6pKrnRoh373CXipO95XRBW6GjWufC1gOC1aRQZOrWJhc8fMbZNzfNNkd2J3q5Z9QFSGzj+lY3Rsm4699HyrX6+1vF4u5Mf9nemIuy8dymdyQwhW1JDstoNdksIR3hZXtgFXEyMeW9wYDrVPAC0romzgNjK5gPEL0VIFh50B/W+PbMgi9ICXJRHqTThtQy+UEofT66zTaQc2K/ThOk1n+a9FOV4UWh9e9M0rQXwjvSHWRjnp0Y5qV6JllqPKfIMNrSvJKbl+i9XLn9geEwIDAQAB
     key-id: auth-key
     ttl: PT1H                # ISO-8601 duration (1 hour)
-    issuer: auth-service
+    issuer: http://auth-service:8080
   refresh:
     ttl: P7D
   login:
