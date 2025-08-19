@@ -11,5 +11,7 @@ public final class MessageKeys {
     public static final String ACCOUNT_LOCKED = "auth.account.locked";
     public static final String VALIDATION_ERROR = "auth.validation.error";
     public static final String PASSWORD_CHANGED = "auth.password.changed";
+    public static final String UNAUTHORIZED = "auth.unauthorized";
+    public static final String FORBIDDEN = "auth.forbidden";
 }
 

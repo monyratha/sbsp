@@ -3,7 +3,9 @@ package morning.com.services.user.controller;
 import morning.com.services.user.dto.MessageKeys;
 import morning.com.services.user.dto.RoleResponse;
 import morning.com.services.user.exception.FieldValidationException;
+import morning.com.services.user.exception.ForbiddenException;
 import morning.com.services.user.exception.GlobalExceptionHandler;
+import morning.com.services.user.exception.UnauthorizedException;
 import morning.com.services.user.service.RoleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,5 +107,21 @@ class RoleControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messageKey").value(MessageKeys.VALIDATION_ERROR))
                 .andExpect(jsonPath("$.data.name").value("already exists"));
+    }
+
+    @Test
+    void whenServiceThrowsUnauthorizedReturns401() throws Exception {
+        when(service.search(isNull(), isNull(), isNull(), any())).thenThrow(new UnauthorizedException());
+        mockMvc.perform(get("/user/role"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.messageKey").value(MessageKeys.UNAUTHORIZED));
+    }
+
+    @Test
+    void whenServiceThrowsForbiddenReturns403() throws Exception {
+        when(service.search(isNull(), isNull(), isNull(), any())).thenThrow(new ForbiddenException());
+        mockMvc.perform(get("/user/role"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.messageKey").value(MessageKeys.FORBIDDEN));
     }
 }
